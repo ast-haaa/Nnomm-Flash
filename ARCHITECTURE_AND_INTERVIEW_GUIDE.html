@@ -233,6 +233,38 @@
       <td><strong>5. Webhook Spoofing &amp; Replay Attacks</strong></td>
       <td>An attacker intercepts a successful payment webhook payload and replays it 100 times to get free meals or forge fake payments.</td>
       <td><strong>HMAC-SHA256 Signatures &amp; Deduplication:</strong> Webhooks require timestamped cryptographic signatures verified in constant time (<code>MessageDigest.isEqual</code>) with 5-minute replay expiry and <code>payment_events</code> deduplication.</td>
+<h3>The Interactive Web Dashboard &amp; Business Experience</h3>
+<p>
+To demonstrate the system visually to non-technical stakeholders and interviewers without requiring Postman or raw terminal commands, the service serves a <strong>Live Visual Web Dashboard at <code>http://localhost:8080/</code></strong>:
+</p>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 30%;">Internal Engine Mechanism</th>
+      <th style="width: 35%;">Clean User Experience in the Dashboard</th>
+      <th style="width: 35%;">Business Invariant Guaranteed</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>POST /v1/deals/.../claims</code> + Row Lock</td>
+      <td><strong>"Claim 1 Voucher Now"</strong> button with live visual countdown bar.</td>
+      <td>Voucher is immediately deducted and held for 10 minutes.</td>
+    </tr>
+    <tr>
+      <td>20 Concurrent Threads against <code>deals</code> row</td>
+      <td><strong>"20-Buyer Rush Test"</strong> button with a 20-node visual grid showing green/red results.</td>
+      <td>All 20 requests resolve in milliseconds; exactly remaining stock is granted, rest notified Sold Out. <strong>0 Oversold.</strong></td>
+    </tr>
+    <tr>
+      <td>Cryptographic Webhook Transition</td>
+      <td><strong>"Complete Payment"</strong> button directly under the reserved voucher.</td>
+      <td>Claim permanently transitions to <code>PAID</code>, ensuring table confirmation.</td>
+    </tr>
+    <tr>
+      <td>Background Coroutine Sweeper</td>
+      <td>Automatic 10-minute hold timer.</td>
+      <td>Unpaid vouchers automatically reappear in the restaurant's stock.</td>
     </tr>
   </tbody>
 </table>

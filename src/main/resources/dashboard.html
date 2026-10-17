@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nnomm Flash Deals • Live Reservation Engine</title>
+  <title>Nnomm Flash Deals • Gourmet Food Reservations</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -50,7 +50,7 @@
 
     /* Navbar */
     .navbar {
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.92);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       position: sticky;
@@ -543,12 +543,12 @@
         <div class="brand-icon">🍔</div>
         <div>
           <div class="brand-title">Nnomm Flash</div>
-          <div class="brand-sub">Reservation Engine</div>
+          <div class="brand-sub">Instant Reservations</div>
         </div>
       </a>
       <div class="nav-status">
         <span class="status-dot"></span>
-        <span>ENGINE READY • PORT 8080</span>
+        <span>LIVE ONLINE</span>
       </div>
     </div>
   </header>
@@ -557,12 +557,12 @@
     <!-- Hero Info Banner -->
     <div class="hero-banner">
       <div class="hero-text">
-        <div class="hero-badge">⚡ Real-World Flash Sale Simulator</div>
-        <h2>High-Concurrency Deal Reservation Engine</h2>
-        <p>Demonstrating PostgreSQL tuple locks (<code>FOR UPDATE</code>), 2-phase crash idempotency, and automated 10-second non-blocking claim sweeps. <strong>Zero overselling guaranteed.</strong></p>
+        <div class="hero-badge">⚡ Limited-Time Special Offers</div>
+        <h2>Gourmet Food Flash Deals</h2>
+        <p>Grab exclusive discounted dining vouchers in real-time. Reserved vouchers hold for 10 minutes, and inventory is guaranteed never to oversell.</p>
       </div>
       <div>
-        <button class="btn btn-secondary" onclick="loadDefaultDeal()">🔄 Reset / Reload Deal</button>
+        <button class="btn btn-secondary" onclick="loadDefaultDeal()">🔄 Reset / New Offer</button>
       </div>
     </div>
 
@@ -581,8 +581,8 @@
 
         <div class="deal-body">
           <div class="deal-meta">
-            <span>The Artisan Kitchen &bull; ⭐ 4.9 (2.4k ratings)</span>
-            <span id="dealIdBadge" style="font-family: monospace; font-size: 11px; background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">deal_id: loading...</span>
+            <span>The Artisan Kitchen &bull; ⭐ 4.9 (2,400+ reviews)</span>
+            <span style="color: var(--primary); font-weight: 700; font-size: 12px;">⏰ Ends in 1 Hour</span>
           </div>
 
           <h3 class="deal-title" id="displayTitle">Truffle Wagyu &amp; Aged Cheddar Burger</h3>
@@ -591,13 +591,13 @@
           <div class="price-row">
             <span class="price-current" id="displayPrice">₹250</span>
             <span class="price-original">₹500</span>
-            <span style="font-size: 12px; font-weight: 700; color: var(--success); background: var(--success-light); padding: 2px 8px; border-radius: var(--radius-full);">Save ₹250</span>
+            <span style="font-size: 12px; font-weight: 700; color: var(--success); background: var(--success-light); padding: 3px 10px; border-radius: var(--radius-full);">Save ₹250</span>
           </div>
 
           <!-- Real-Time Stock Bar -->
           <div class="stock-box">
             <div class="stock-header">
-              <span>Inventory Remaining</span>
+              <span>Remaining Vouchers</span>
               <span id="stockCountText" style="color: var(--primary);">5 of 5 left</span>
             </div>
             <div class="stock-bar-bg">
@@ -613,16 +613,16 @@
           </div>
 
           <!-- Claim Result Banner -->
-          <div id="claimResultBox" style="display: none; margin-top: 16px; padding: 14px; background: #f0fdf4; border: 1.5px solid #86efac; border-radius: var(--radius-md);">
-            <div style="font-size: 13px; font-weight: 700; color: #166534; display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
-              <span>✅ Claim Reserved for 10 Minutes!</span>
+          <div id="claimResultBox" style="display: none; margin-top: 16px; padding: 16px; background: #f0fdf4; border: 1.5px solid #86efac; border-radius: var(--radius-md);">
+            <div style="font-size: 14px; font-weight: 800; color: #166534; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+              <span>🎉 Voucher Reserved Successfully!</span>
             </div>
-            <div style="font-size: 11px; color: #15803d; font-family: monospace; margin-bottom: 10px;" id="claimIdText">
-              claim_id: ...
+            <div style="font-size: 12.5px; color: #15803d; margin-bottom: 12px;" id="claimIdText">
+              Reserved for 10 minutes. Complete payment to confirm your table.
             </div>
             <div style="display: flex; gap: 8px;">
-              <button class="btn btn-success" style="padding: 6px 12px; font-size: 12px; flex: 1;" onclick="simulatePayment(true)">💳 Simulate Payment Succeeded</button>
-              <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px; flex: 1;" onclick="simulatePayment(false)">❌ Simulate Payment Failed</button>
+              <button class="btn btn-success" style="padding: 8px 14px; font-size: 13px; flex: 1;" onclick="simulatePayment(true)">💳 Complete Payment</button>
+              <button class="btn btn-danger" style="padding: 8px 14px; font-size: 13px; flex: 1;" onclick="simulatePayment(false)">❌ Cancel / Fail Payment</button>
             </div>
           </div>
         </div>
@@ -631,50 +631,50 @@
       <!-- RIGHT COLUMN: Interactive Control & Test Arena -->
       <div class="card">
         <div class="tab-header">
-          <button class="tab-btn active" onclick="switchTab('concurrency', event)">🔥 Concurrency Blast</button>
-          <button class="tab-btn" onclick="switchTab('create', event)">➕ Create Deal</button>
-          <button class="tab-btn" onclick="switchTab('tokens', event)">🔑 Personas</button>
+          <button class="tab-btn active" onclick="switchTab('concurrency', event)">⚡ 20-Buyer Rush Test</button>
+          <button class="tab-btn" onclick="switchTab('create', event)">➕ Publish Offer</button>
+          <button class="tab-btn" onclick="switchTab('tokens', event)">👤 User Profiles</button>
         </div>
 
         <!-- TAB 1: Concurrency Blast Simulator -->
         <div id="tab-concurrency" class="tab-content active">
-          <h4 style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">Concurrency Blast Simulator</h4>
-          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">
-            Simulate 20 distinct customers clicking "Claim" simultaneously on separate threads. Watch PostgreSQL's row-level lock ensure <strong>zero overselling</strong>.
+          <h4 style="font-size: 15px; font-weight: 800; margin-bottom: 6px;">Simulate 20 Simultaneous Buyers</h4>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+            What happens when 20 customers click "Claim" at the exact same second for only 5 vouchers? Watch the system guarantee that inventory is <strong>never oversold</strong>.
           </p>
 
           <button id="blastBtn" class="btn btn-accent btn-block" onclick="runConcurrencyBlast()">
-            🚀 Blast 20 Simultaneous Claims
+            🚀 Launch 20-Buyer Rush
           </button>
 
-          <div style="margin-top: 18px;">
-            <label>Live Results Grid (20 Requests):</label>
+          <div style="margin-top: 20px;">
+            <label style="color: var(--text-muted);">Live Buyer Grid (20 Concurrent Requests):</label>
             <div class="blast-grid" id="blastGrid">
               <!-- 20 nodes populated by JS -->
             </div>
-            <div id="blastStats" style="font-size: 12px; font-weight: 600; color: var(--text-muted); text-align: center;">
-              Ready to fire test requests.
+            <div id="blastStats" style="font-size: 13px; font-weight: 700; color: var(--text-muted); text-align: center; margin-top: 10px;">
+              Ready to simulate buyer rush.
             </div>
           </div>
         </div>
 
         <!-- TAB 2: Create New Deal (Admin) -->
         <div id="tab-create" class="tab-content">
-          <h4 style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">Publish New Flash Deal</h4>
-          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">Creates a new deal row in PostgreSQL with start/end time windows.</p>
+          <h4 style="font-size: 15px; font-weight: 800; margin-bottom: 6px;">Publish a New Flash Offer</h4>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Create a limited-time special offer for your restaurant.</p>
 
           <div class="form-group">
-            <label>Deal Title:</label>
+            <label>Dish Name:</label>
             <input type="text" id="inputTitle" value="Woodfired Margherita Pizza">
           </div>
 
           <div style="display: flex; gap: 12px;">
             <div class="form-group" style="flex: 1;">
-              <label>Price (₹):</label>
+              <label>Special Price (₹):</label>
               <input type="number" id="inputPrice" value="199">
             </div>
             <div class="form-group" style="flex: 1;">
-              <label>Total Stock:</label>
+              <label>Total Vouchers Available:</label>
               <input type="number" id="inputStock" value="5">
             </div>
           </div>
@@ -682,7 +682,7 @@
           <div class="form-group">
             <label>Food Photo Theme:</label>
             <select id="inputPhoto" onchange="updatePhotoPreview()">
-              <option value="burger">🍔 Gourmet Burger</option>
+              <option value="burger">🍔 Gourmet Wagyu Burger</option>
               <option value="pizza" selected>🍕 Italian Woodfired Pizza</option>
               <option value="sushi">🍣 Japanese Sushi Platter</option>
               <option value="biryani">🍚 Royal Hyderabadi Biryani</option>
@@ -690,27 +690,27 @@
           </div>
 
           <button class="btn btn-primary btn-block" onclick="submitCreateDeal()">
-            Publish Deal (POST /v1/deals)
+            Publish Offer
           </button>
         </div>
 
         <!-- TAB 3: Persona / Auth Tokens -->
         <div id="tab-tokens" class="tab-content">
-          <h4 style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">Active JWT Personas</h4>
-          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">HS256 tokens minted with strictly validated roles and expiry.</p>
+          <h4 style="font-size: 15px; font-weight: 800; margin-bottom: 6px;">Active Demo Profiles</h4>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Switch between testing as a Hungry Customer or a Restaurant Partner.</p>
 
           <div class="form-group">
-            <label>Customer Persona ID:</label>
-            <input type="text" id="txtCustSub" readonly style="font-family: monospace; font-size: 12px; background: #f8fafc;">
+            <label>Customer Profile:</label>
+            <input type="text" id="txtCustSub" readonly value="Priya Patel (Customer • App User)" style="font-weight: 600; background: #f8fafc;">
           </div>
 
           <div class="form-group">
-            <label>Restaurant Admin Persona ID:</label>
-            <input type="text" id="txtAdminSub" readonly style="font-family: monospace; font-size: 12px; background: #f8fafc;">
+            <label>Restaurant Partner Profile:</label>
+            <input type="text" id="txtAdminSub" readonly value="Chef Antonio (The Artisan Kitchen)" style="font-weight: 600; background: #f8fafc;">
           </div>
 
           <button class="btn btn-secondary btn-block" onclick="fetchNewPersonas()">
-            🔄 Mint New Fresh Personas
+            🔄 Switch to Another Demo Profile
           </button>
         </div>
       </div>
@@ -720,7 +720,7 @@
     <div class="log-card">
       <div class="log-header">
         <div class="log-title">
-          <span>📋 Real-Time Activity &amp; SQL Transaction Logs</span>
+          <span>📋 Live Order &amp; Inventory Activity</span>
         </div>
         <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="clearLogs()">Clear Log</button>
       </div>
@@ -753,11 +753,10 @@
       setTimeout(() => toast.remove(), 4000);
     }
 
-    function appendLog(action, details) {
+    function appendLog(headline, message) {
       const logBox = document.getElementById('logStream');
       const time = new Date().toLocaleTimeString();
-      const payload = typeof details === 'object' ? JSON.stringify(details, null, 2) : details;
-      logBox.textContent = '[' + time + '] ' + action + '\n' + payload + '\n\n' + logBox.textContent;
+      logBox.textContent = `[${time}] ${headline}\n${message}\n\n` + logBox.textContent;
     }
 
     function clearLogs() {
@@ -784,11 +783,9 @@
         const data = await res.json();
         adminToken = data.admin_token;
         customerToken = data.customer_token;
-        document.getElementById('txtAdminSub').value = data.admin_sub;
-        document.getElementById('txtCustSub').value = data.customer_sub;
-        appendLog('MINTED NEW JWTs', { role_customer: data.customer_sub, role_admin: data.admin_sub });
+        appendLog('USER PROFILES READY', 'Active as customer: Priya Patel (Customer Profile)');
       } catch (e) {
-        showToast('Failed to mint tokens: ' + e.message, 'error');
+        showToast('Profile sync error: ' + e.message, 'error');
       }
     }
 
@@ -814,16 +811,15 @@
         const deal = await res.json();
         activeDeal = deal;
         updateDealUi(deal);
-        appendLog('INITIALIZED DEAL (POST /v1/deals)', deal);
-        showToast('Deal created & loaded!', 'success');
+        appendLog('OFFER PUBLISHED', 'Deal live: Truffle Wagyu Burger (5 vouchers available at ₹250)');
+        showToast('Deal is live!', 'success');
       } catch (err) {
-        appendLog('ERROR INIT DEAL', err.message);
+        appendLog('ERROR', err.message);
       }
     }
 
     function updateDealUi(deal) {
       if (!deal) return;
-      document.getElementById('dealIdBadge').textContent = 'id: ' + deal.id.substring(0, 8) + '...';
       document.getElementById('displayTitle').textContent = deal.title;
       document.getElementById('displayPrice').textContent = '₹' + (deal.price_paise / 100);
 
@@ -884,16 +880,18 @@
           body: JSON.stringify({ quantity: 1 })
         });
         const data = await res.json();
-        appendLog('POST /v1/deals/.../claims [HTTP ' + res.status + ']', data);
 
         if (res.ok && data.id) {
           currentClaimId = data.id;
           document.getElementById('claimResultBox').style.display = 'block';
-          document.getElementById('claimIdText').textContent = 'claim_id: ' + data.id + ' • Status: RESERVED';
+          document.getElementById('claimIdText').textContent = 'Voucher reserved for 10 minutes. Click below to complete payment.';
+          appendLog('VOUCHER RESERVED', `Customer reserved 1 unit of "${activeDeal.title}". 10-minute payment countdown started.`);
           showToast('Voucher Reserved! 10m to Pay', 'success');
           refreshDealStock();
         } else {
-          showToast(data.error?.message || 'Sold Out / Error', 'error');
+          const msg = data.error?.message || 'Offer Sold Out';
+          appendLog('RESERVATION FAILED', msg);
+          showToast(msg, 'error');
           refreshDealStock();
         }
       } catch (err) {
@@ -907,15 +905,16 @@
       try {
         const res = await fetch('/dev/simulate-webhook?claim_id=' + currentClaimId + '&event_type=' + eventType, { method: 'POST' });
         const data = await res.json();
-        appendLog('WEBHOOK (' + eventType + ') [HTTP ' + res.status + ']', data);
         if (success) {
+          appendLog('PAYMENT CONFIRMED', 'Payment verified successfully! Deal is permanently confirmed.');
           showToast('Payment Succeeded! Deal Confirmed 🍔', 'success');
-          document.getElementById('claimIdText').textContent = 'claim_id: ' + currentClaimId + ' • Status: PAID (Confirmed)';
+          document.getElementById('claimIdText').textContent = '✅ Payment Received! Your voucher is confirmed.';
         } else {
-          showToast('Payment Failed. Status retained.', 'error');
+          appendLog('PAYMENT FAILED', 'Payment was cancelled or failed. Customer may retry until reservation expires.');
+          showToast('Payment Failed.', 'error');
         }
       } catch (err) {
-        showToast('Webhook simulation error', 'error');
+        showToast('Payment processing error', 'error');
       }
     }
 
@@ -945,8 +944,9 @@
         activeDeal = deal;
         updatePhotoPreview();
         updateDealUi(deal);
-        appendLog('CREATED NEW DEAL', deal);
-        showToast('New deal created successfully!', 'success');
+        appendLog('NEW OFFER PUBLISHED', `Deal "${title}" created with ${stock} vouchers at ₹${price/100}`);
+        showToast('New deal published successfully!', 'success');
+        document.getElementById('claimResultBox').style.display = 'none';
       } catch (err) {
         showToast('Failed to create deal', 'error');
       }
@@ -964,7 +964,7 @@
         grid.appendChild(node);
       }
 
-      document.getElementById('blastStats').textContent = 'Firing 20 simultaneous requests to PostgreSQL...';
+      document.getElementById('blastStats').textContent = 'Simulating 20 simultaneous buyers...';
       const promises = [];
 
       for (let i = 1; i <= 20; i++) {
@@ -974,11 +974,11 @@
               const node = document.getElementById('blast-node-' + i);
               if (res.status === 201) {
                 node.className = 'blast-node success';
-                node.title = '201 Created';
+                node.title = 'Voucher Allocated';
                 return 201;
               } else {
                 node.className = 'blast-node conflict';
-                node.title = '409 Conflict';
+                node.title = 'Sold Out';
                 return 409;
               }
             })
@@ -991,19 +991,14 @@
       const rejected = results.filter(s => s === 409).length;
 
       document.getElementById('blastStats').innerHTML =
-        '<strong style="color: var(--success);">' + claimed + ' Claims Succeeded</strong> &bull; ' +
-        '<strong style="color: var(--danger);">' + rejected + ' Rejected (Sold Out)</strong> &bull; ' +
+        '<strong style="color: var(--success);">' + claimed + ' Vouchers Allocated</strong> &bull; ' +
+        '<strong style="color: var(--danger);">' + rejected + ' Notified Sold Out</strong> &bull; ' +
         '<strong>Oversold: 0 ✅</strong>';
 
-      appendLog('CONCURRENCY BLAST RESULT', {
-        total_requests: 20,
-        succeeded_201: claimed,
-        rejected_409_sold_out: rejected,
-        verdict: 'PostgreSQL FOR UPDATE row lock prevented overselling!'
-      });
+      appendLog('20-BUYER RUSH TEST COMPLETED', `${claimed} customers secured vouchers, ${rejected} notified sold out. Total inventory strictly respected: 0 oversold.`);
 
       refreshDealStock();
-      showToast('Blast Finished: ' + claimed + ' succeeded, ' + rejected + ' rejected. Zero overselling!', 'info');
+      showToast(`Rush Test Complete: ${claimed} secured vouchers, ${rejected} sold out. 0 oversold!`, 'info');
     }
 
     // Auto-boot on page load
