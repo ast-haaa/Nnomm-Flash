@@ -2,6 +2,8 @@
 
 A high-concurrency flash-deal reservation and claim service built with **Spring Boot 3**, **Kotlin**, **PostgreSQL**, and **Flyway** for Nnomm.
 
+> 📘 **Master Documentation**: All architecture diagrams, code navigation maps, staff interview Q&A, and candidate brief answers are consolidated into a single comprehensive PDF: **[NNOMM_MASTER_DOCUMENTATION.pdf](NNOMM_MASTER_DOCUMENTATION.pdf)**.
+
 ---
 
 ## 🚀 How to Run and Test
