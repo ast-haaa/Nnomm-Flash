@@ -141,6 +141,7 @@ class SpringMvcWebTest {
         )
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.id").value(claimId))
+            .andExpect(header().string("Idempotent-Replayed", "true"))
             .andExpect(header().string("X-Idempotent-Replay", "true"))
 
         // 5. Fetch claim via GET /v1/claims/{claimId}

@@ -43,6 +43,7 @@ class ClaimController(
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         if (result.isReplayed) {
+            headers.set("Idempotent-Replayed", "true")
             headers.set("X-Idempotent-Replay", "true")
         }
 

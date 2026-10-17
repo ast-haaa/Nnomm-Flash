@@ -55,8 +55,7 @@ When running two (or $N$) service instances sharing a database:
    SELECT key, customer_id, deal_id, quantity, status_code, response_body, created_at, locked_until
    FROM idempotency_keys WHERE customer_id = ? AND key = ? FOR UPDATE;
    ```
-   ([IdempotencyRepository.kt](src/main/kotlin/com/nnomm/repository/IdempotencyRepository.kt#L23-L37))
-5. It discovers `status_code != null`. It **replays** the stored response immediately with the response header `X-Idempotent-Replay: true` ([ClaimController.kt](src/main/kotlin/com/nnomm/controller/ClaimController.kt#L45)).
+5. It discovers `status_code != null`. It **replays** the stored response immediately with the response header `Idempotent-Replayed: true` ([ClaimController.kt](src/main/kotlin/com/nnomm/controller/ClaimController.kt#L45-L48)).
 6. **Result**: Zero new claims created, zero stock lost, customer receives their original claim.
 
 #### Scenario B: Service Crashes Just Before the Commit
