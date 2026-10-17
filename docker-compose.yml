@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: nnomm-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: nnomm
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d nnomm"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
+  service-1:
+    build: .
+    container_name: nnomm-service-1
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      DATABASE_URL: jdbc:postgresql://postgres:5432/nnomm
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: postgres
+      JWT_SECRET: production_super_secret_jwt_key_at_least_32_characters_long
+      WEBHOOK_SECRET: production_super_secret_webhook_key_at_least_32_chars
+      CLAIM_TTL_SECONDS: 600
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  service-2:
+    build: .
+    container_name: nnomm-service-2
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      PORT: 8081
+      DATABASE_URL: jdbc:postgresql://postgres:5432/nnomm
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: postgres
+      JWT_SECRET: production_super_secret_jwt_key_at_least_32_characters_long
+      WEBHOOK_SECRET: production_super_secret_webhook_key_at_least_32_chars
+      CLAIM_TTL_SECONDS: 600
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:
