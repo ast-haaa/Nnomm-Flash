@@ -125,5 +125,7 @@ src/main/kotlin/com/nnomm/
 
 ## 🤖 AI Tools Used & Reflection
 
-- **Google DeepMind Antigravity Coding Assistant**: Used for boilerplate generation (Spring Boot configuration, SQL migration syntax checks, test scenario outlines).
-- **Suggestion Rejected & Rationale**: The AI initially suggested using Spring Data JPA with `@Version` optimistic locking for deal inventory. I **rejected** this suggestion because optimistic locking causes mass rollbacks under high contention (e.g. 200 concurrent claims fighting for the last unit would result in 199 `OptimisticLockingFailureException` retries, thrashing CPU). Instead, I insisted on raw SQL with **pessimistic row locking (`SELECT ... FOR UPDATE`)**, explicit check constraints, and `SELECT ... FOR UPDATE SKIP LOCKED` for the reaper, ensuring zero oversells and predictable transaction queueing.
+- **Google DeepMind Antigravity Coding Assistant**: Used extensively for AI-assisted development, including Spring Boot configuration, Kotlin implementation, SQL migrations, and automated test generation.
+- **Critical Evaluation of AI Suggestions**: Evaluated AI-generated approaches for handling concurrent deal claims. The solution uses PostgreSQL pessimistic row-level locking (SELECT ... FOR UPDATE), database constraints, and transactional operations to prevent overselling and maintain data integrity under concurrent requests.
+- **Concurrency & Reliability**: Used SELECT ... FOR UPDATE SKIP LOCKED for background cleanup processing, helping prevent workers from processing the same eligible records simultaneously.
+- **Learning & Validation**: Used AI assistance to explore implementation choices and understand trade-offs between optimistic and pessimistic locking, with testing focused on concurrency, transaction safety, and data integrity.
