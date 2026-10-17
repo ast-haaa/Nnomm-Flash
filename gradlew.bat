@@ -24,6 +24,8 @@
 @rem Set local scope for the variables with windows NT shell
 if "%OS%"=="Windows_NT" setlocal
 
+if not defined GRADLE_USER_HOME set "GRADLE_USER_HOME=E:\.gradle"
+
 set DIRNAME=%~dp0
 if "%DIRNAME%"=="" set DIRNAME=.
 set APP_BASE_NAME=%~n0
