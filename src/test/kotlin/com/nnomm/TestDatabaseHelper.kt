@@ -57,8 +57,8 @@ object TestDatabaseHelper {
                 databaseUrl = container.jdbcUrl,
                 databaseUser = container.username,
                 databasePass = container.password,
-                jwtSecret = "super-secret-jwt-key-for-testing-at-least-32-chars-long",
-                webhookSecret = "super-secret-webhook-key-for-testing-at-least-32-chars",
+                jwtSecret = System.getenv("TEST_JWT_SECRET") ?: "test_jwt_secret_token_key_32_characters_minimum",
+                webhookSecret = System.getenv("TEST_WEBHOOK_SECRET") ?: "test_webhook_secret_key_32_characters_minimum",
                 claimTtlSeconds = 600L
             )
         }
