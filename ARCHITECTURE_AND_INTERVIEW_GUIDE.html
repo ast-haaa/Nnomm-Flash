@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Nnomm Flash-Deal Claim Service - Architecture & Interview Guide</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 16mm 18mm 16mm;
+    @bottom-right {
+      content: counter(page);
+    }
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #1f2937;
+    line-height: 1.55;
+    font-size: 11pt;
+    margin: 0;
+    padding: 0;
+  }
+  h1 {
+    color: #0f172a;
+    font-size: 24pt;
+    border-bottom: 3px solid #2563eb;
+    padding-bottom: 8px;
+    margin-top: 0;
+    margin-bottom: 12px;
+  }
+  h2 {
+    color: #1e3a8a;
+    font-size: 16pt;
+    border-bottom: 1.5px solid #cbd5e1;
+    padding-bottom: 6px;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    page-break-after: avoid;
+  }
+  h3 {
+    color: #1e40af;
+    font-size: 13pt;
+    margin-top: 18px;
+    margin-bottom: 8px;
+    page-break-after: avoid;
+  }
+  h4 {
+    color: #334155;
+    font-size: 11.5pt;
+    margin-top: 14px;
+    margin-bottom: 6px;
+  }
+  p, ul, ol {
+    margin-top: 6px;
+    margin-bottom: 10px;
+  }
+  li {
+    margin-bottom: 4px;
+  }
+  code {
+    font-family: "JetBrains Mono", Consolas, "Fira Code", monospace;
+    font-size: 9.5pt;
+    background-color: #f1f5f9;
+    padding: 2px 5px;
+    border-radius: 4px;
+    color: #b91c1c;
+  }
+  pre {
+    background-color: #0f172a;
+    color: #f8fafc;
+    padding: 12px 14px;
+    border-radius: 6px;
+    font-family: "JetBrains Mono", Consolas, monospace;
+    font-size: 9pt;
+    overflow-x: auto;
+    line-height: 1.45;
+    page-break-inside: avoid;
+    margin: 10px 0;
+  }
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 10pt;
+    page-break-inside: avoid;
+  }
+  th, td {
+    border: 1px solid #cbd5e1;
+    padding: 8px 10px;
+    text-align: left;
+  }
+  th {
+    background-color: #f8fafc;
+    color: #0f172a;
+    font-weight: 600;
+  }
+  tr:nth-child(even) {
+    background-color: #f9fafb;
+  }
+  .card {
+    background: #f8fafc;
+    border-left: 4px solid #2563eb;
+    padding: 12px 16px;
+    margin: 12px 0;
+    border-radius: 0 6px 6px 0;
+    page-break-inside: avoid;
+  }
+  .alert-warning {
+    background: #fffbeb;
+    border-left: 4px solid #d97706;
+    padding: 12px 16px;
+    margin: 12px 0;
+    border-radius: 0 6px 6px 0;
+    page-break-inside: avoid;
+  }
+  .alert-success {
+    background: #f0fdf4;
+    border-left: 4px solid #16a34a;
+    padding: 12px 16px;
+    margin: 12px 0;
+    border-radius: 0 6px 6px 0;
+    page-break-inside: avoid;
+  }
+  .page-break {
+    page-break-before: always;
+  }
+  .tag {
+    display: inline-block;
+    padding: 2px 7px;
+    font-size: 8.5pt;
+    font-weight: 600;
+    border-radius: 4px;
+    margin-right: 4px;
+  }
+  .tag-get { background: #dbeafe; color: #1e40af; }
+  .tag-post { background: #dcfce7; color: #15803d; }
+  .qa-box {
+    margin-bottom: 18px;
+    border-bottom: 1px dashed #cbd5e1;
+    padding-bottom: 12px;
+    page-break-inside: avoid;
+  }
+  .q-title {
+    font-weight: 700;
+    color: #1e3a8a;
+    font-size: 11pt;
+    margin-bottom: 6px;
+  }
+  .diagram {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 12px;
+    font-family: monospace;
+    font-size: 8.5pt;
+    white-space: pre;
+    line-height: 1.35;
+    margin: 12px 0;
+    page-break-inside: avoid;
+  }
+</style>
+</head>
+<body>
+
+<h1>Nnomm Flash-Deal Claim Service</h1>
+<div style="font-size: 11pt; color: #64748b; margin-bottom: 20px;">
+  <strong>System Architecture, File Navigation, Code Modification Playbook &amp; Staff-Level Technical Interview Guide</strong><br>
+  <em>Build Status: 16/16 Automated Concurrency Tests Passing (100%) | Stack: Kotlin, Ktor, PostgreSQL, HikariCP, Flyway</em>
+</div>
+
+<div class="alert-success">
+  <strong>Repository &amp; Git Status:</strong><br>
+  No remote git push was performed. All commits and code changes exist exclusively in your <strong>local Git repository</strong> on this machine at <code>e:\Projects\nnomm</code>. You have 100% control over where and when to push this code.
+</div>
+
+<h2>Table of Contents</h2>
+<ol>
+  <li><strong>Executive Architecture Overview</strong> (Design Philosophy &amp; High-Level Flow)</li>
+  <li><strong>Complete Codebase Map ("Where is Where")</strong> (Every file explained)</li>
+  <li><strong>The Modification Playbook ("How to Change Things Easily")</strong> (Step-by-step recipes)</li>
+  <li><strong>Concurrency &amp; Data Invariants Deep Dive</strong> (PostgreSQL row locks, MVCC, idempotency state machine)</li>
+  <li><strong>Staff-Level Technical Interview Questions &amp; Answers</strong> (15 detailed questions)</li>
+  <li><strong>Local Testing &amp; Git Instructions</strong></li>
+</ol>
+
+<hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;">
+
+<h2>1. Executive Architecture Overview</h2>
+<p>
+The Nnomm Flash-Deal Claim Service is engineered to solve the classic distributed systems challenge: <strong>high-concurrency flash sales with zero overselling, zero duplicate claims, sub-millisecond data consistency, and crash resilience across multiple horizontally-scaled instances.</strong>
+</p>
+
+<h3>Core Architectural Principles</h3>
+<ul>
+  <li><strong>Database as the Source of Truth:</strong> When multiple stateless service instances process claims concurrently, JVM-level synchronization (<code>synchronized</code>, <code>ReentrantLock</code>, Kotlin <code>Mutex</code>) is completely useless. Serialization is enforced at the database layer via PostgreSQL's tuple-level locks (<code>SELECT ... FOR UPDATE</code>) and storage-level check constraints.</li>
+  <li><strong>Zero ORM Overhead:</strong> Rather than using heavy ORMs (like Hibernate/JPA or Exposed) that hide SQL queries, Nnomm uses raw parameterised JDBC prepared statements with HikariCP. Every SQL query is explicit, inspectable, and optimized.</li>
+  <li><strong>Strict 2-Phase Idempotency:</strong> Every mutation requires an <code>Idempotency-Key</code>. The service registers an in-progress lock before touching stock, commits the result transactionally, and auto-recovers from node crashes via a 60-second lease timeout.</li>
+  <li><strong>Non-Blocking Expiry Sweeping:</strong> Expired claims are reclaimed by a background coroutine worker utilizing PostgreSQL's <code>FOR UPDATE SKIP LOCKED</code>, allowing multiple worker nodes to run simultaneously without lock contention or deadlocks.</li>
+  <li><strong>Constant-Time Security:</strong> Webhooks and JWT tokens are verified using timing-safe operations (<code>MessageDigest.isEqual</code>) to prevent side-channel timing attacks.</li>
+</ul>
+
+<div class="diagram">
++-----------------------------------------------------------------------------------+
+|                                 CLIENT / MOBILE APP                               |
++-----------------------------------------------------------------------------------+
+        |                                                     |
+  [POST /v1/deals/{id}/claims]                       [POST /v1/webhooks/payments]
+  (Idempotency-Key: "k-123")                          (X-Signature: HMAC-SHA256)
+        |                                                     |
+        v                                                     v
++-------------------------------+                     +-----------------------------+
+|    ClaimRoutes / AuthHelper   |                     |  WebhookRoutes / HmacService|
+|  - 16KB payload protection    |                     |  - Verify timestamp (&lt;5 min)|
+|  - Customer JWT auth check    |                     |  - Timing-safe HMAC check   |
++-------------------------------+                     +-----------------------------+
+        |                                                     |
+        v                                                     v
++-------------------------------+                     +-----------------------------+
+|         ClaimService          |                     |    PaymentWebhookService    |
+|  1. Register idempotency lock |                     |  1. Deduplicate event_id    |
+|  2. Check existing / replayed |                     |  2. Lock claim FOR UPDATE   |
+|  3. Open DB Transaction:      |                     |  3. Validate amount &amp; status|
+|     - SELECT deal FOR UPDATE  |                     |  4. Transition status:      |
+|     - Verify stock &amp; timespan |                     |     - RESERVED -&gt; PAID      |
+|     - Check customer limit    |                     |     - EXPIRED -&gt; REFUND     |
+|     - UPDATE stock_available  |                     |     - Mismatch -&gt; REVIEW    |
+|     - INSERT claim            |                     |  5. Commit transaction     |
+|  4. Save response in key table|                     +-----------------------------+
++-------------------------------+                                    |
+        |                                                            |
+        +-----------------------------+------------------------------+
+                                      |
+                                      v
++-----------------------------------------------------------------------------------+
+|                                 POSTGRESQL 15                                     |
+|  - Tables: deals, claims, idempotency_keys, payment_events                        |
+|  - Engine Level Check Constraints: CHECK(stock_available &gt;= 0)                     |
+|                                    CHECK(stock_available &lt;= stock_total)          |
+|  - Unique Indexes: UNIQUE(deal_id, customer_id) WHERE status != 'EXPIRED'        |
++-----------------------------------------------------------------------------------+
+                                      ^
+                                      | (Sweeps expired claims every 10s)
++-----------------------------------------------------------------------------------+
+|                        ClaimExpiryWorker (Background Job)                         |
+|  SELECT * FROM claims WHERE status='RESERVED' AND expires_at &lt;= NOW()              |
+|  FOR UPDATE SKIP LOCKED                                                           |
+|  -&gt; Sets status='EXPIRED', re-increments stock_available                          |
++-----------------------------------------------------------------------------------+
+</div>
+
+<div class="page-break"></div>
+
+<h2>2. Complete Codebase Map ("Where is Where")</h2>
+<p>
+The project follows a clean layered architecture with zero circular dependencies. Below is the comprehensive guide to every source file in the project.
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width: 32%;">File Path</th>
+      <th style="width: 20%;">Component Layer</th>
+      <th style="width: 48%;">Purpose &amp; Exact Responsibilities</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>src/main/kotlin/com/nnomm/<br>Application.kt</code></td>
+      <td>Application Entrypoint</td>
+      <td>Configures and starts the embedded Netty Ktor server on port 8080. Bootstraps the HikariCP database pool, executes Flyway migrations, configures serialization and routing, and launches the background <code>ClaimExpiryWorker</code> coroutine.</td>
+    </tr>
+    <tr>
+      <td><code>com/nnomm/config/<br>AppConfig.kt</code></td>
+      <td>Configuration</td>
+      <td>Reads environment variables with sensible defaults: <code>DATABASE_URL</code>, <code>DATABASE_USER</code>, <code>DATABASE_PASSWORD</code>, <code>JWT_SECRET</code>, <code>WEBHOOK_SECRET</code>, <code>EXPIRY_WORKER_INTERVAL_MS</code> (default: 10s), <code>CLAIM_TTL_MINUTES</code> (default: 10m).</td>
+    </tr>
+    <tr>
+      <td><code>com/nnomm/database/<br>DatabaseFactory.kt</code></td>
+      <td>Database &amp; Transactions</td>
+      <td>Manages the HikariCP connection pool and Flyway schema migrations. Provides the transaction helpers <code>withTransaction { conn -> ... }</code> and <code>withConnection { conn -> ... }</code> with proper auto-commit management and automatic rollback on failure.</td>
+    </tr>
+    <tr>
+      <td><code>com/nnomm/domain/<br>Models.kt</code></td>
+      <td>Domain &amp; DTOs</td>
+      <td>Contains all domain entities, enums, and JSON serializable DTOs: <code>Deal</code>, <code>Claim</code>, <code>ClaimStatus</code> (<code>RESERVED</code>, <code>PAID</code>, <code>EXPIRED</code>, <code>NEEDS_REVIEW</code>, <code>REFUND_PENDING</code>), <code>UserRole</code>, <code>CreateDealRequest</code>, <code>ClaimRequest</code>, <code>WebhookEvent</code>.</td>
+    </tr>
+    <tr>
+      <td><code>com/nnomm/domain/<br>Exceptions.kt</code></td>
+      <td>Domain Exceptions</td>
+      <td>Standardized exceptions that cleanly map to HTTP error responses: <code>SoldOutException</code> (409), <code>DealNotLiveException</code> (400), <code>AlreadyClaimedException</code> (409), <code>RequestInProgressException</code> (409), <code>DealNotFoundException</code> (404), <code>ClaimNotFoundException</code> (404).</td>
+    </tr>
+    <tr>
+      <td><code>com/nnomm/repository/<br>DealRepository.kt</code></td>
+      <td>Data Access</td>
+      <td>Performs raw parameterised SQL queries on <code>deals</code>: <code>findByIdForUpdate</code> (row locking), <code>createDeal</code>, <code>decrementStock</code> (atomic check &amp; update), <code>incrementStock</code> (reclaiming inventory upon expiry).</td>
+    </tr>
+    <tr>
+      <td><code>com/nnomm/repository/<br>ClaimRepository.kt</code></td>
+      <td>Data Access</td>
+      <td>Manages the <code>claims</code> table: <code>createClaim</code>, <code>findById</code>, <code>findByIdForUpdate</code>, <code>findActiveClaimByCustomer</code>, <code>updateStatus</code>, and <code>findExpiredClaimsForUpdateSkipLocked</code> (concurrency-safe batch sweeper).</td>
+    </tr>
+    <tr>
+      <td><code>com/nnomm/repository/<br>IdempotencyRepository.kt</code></td>
+      <td>Data Access</td>
+      <td>Maintains the <code>idempotency_keys</code> table: creates pending lock records with <code>locked_until</code> leases, reads existing records for replaying, saves completed HTTP status and response payloads, and renews expired crash locks.</td>
+    </tr>
+    <tr>
+      <td><code>com/nnomm/repository/<br>PaymentEventRepository.kt</code></td>
+      <td>Data Access</td>
+      <td>Manages the <code>payment_events</code> table: records incoming webhook <code>event_id</code>, tracks payment amounts, records outcome reasons, and ensures duplicate webhook events are rejected idempotently.</td>
+    </tr>
+    <tr>
+      <td><code>com/nnomm/service/<br>DealService.kt</code></td>
+      <td>Business Logic</td>
+      <td>Validates deal creation parameters (positive price, total stock > 0, start time before end time), verifies admin role privileges, and formats deal responses.</td>
+    </tr>
+    <tr>
+      <td><code>com/nnomm/service/<br>ClaimService.kt</code></td>
+      <td>Core Concurrency Engine</td>
+      <td>Orchestrates the entire claim workflow: manages idempotency state machine, acquires row locks on deals, validates deal active time windows, enforces the 1-active-claim-per-customer rule, executes atomic stock decrements, and persists the HTTP 201 response.</td>
+    </tr>
+    <tr>
+      <td><code>com/nnomm/service/<br>PaymentWebhookService.kt</code></td>
+      <td>Webhook Orchestration</td>
+      <td>Validates webhook timestamps (5-minute window), verifies HMAC-SHA256 signatures, deduplicates <code>event_id</code>, locks the claim row, and executes status transitions (e.g. <code>RESERVED -> PAID</code>, <code>EXPIRED -> REFUND_PENDING</code>, amount mismatch -> <code>NEEDS_REVIEW</code>).</td>
+    </tr>
+    <tr>
+      <td><code>com/nnomm/service/<br>ClaimExpiryWorker.kt</code></td>
+      <td>Background Worker</td>
+      <td>A coroutine worker executing periodically. Uses <code>SKIP LOCKED</code> to batch-fetch up to 100 expired reserved claims, marks them <code>EXPIRED</code>, and atomically restores stock back to the deals.</td>
+    </tr>
+    <tr>
+      <td><code>com/nnomm/security/<br>JwtService.kt</code></td>
+      <td>Authentication</td>
+      <td>Generates and verifies HS256 JWT tokens. Enforces role validations, token expiration, subject extraction, and restaurant association checks.</td>
+    </tr>
+    <tr>
+      <td><code>com/nnomm/security/<br>HmacService.kt</code></td>
+      <td>Webhook Security</td>
+      <td>Computes HMAC-SHA256 signatures over <code>timestamp.raw_body</code> and validates signatures using constant-time byte comparison (<code>MessageDigest.isEqual</code>).</td>
+    </tr>
+    <tr>
+      <td><code>com/nnomm/routes/<br>DealRoutes.kt, ClaimRoutes.kt,<br>WebhookRoutes.kt</code></td>
+      <td>HTTP Routing</td>
+      <td>Exposes REST endpoints, validates payload size (16KB ceiling to prevent memory denial-of-service), enforces role authorization, extracts idempotency headers, and routes to appropriate service methods.</td>
+    </tr>
+    <tr>
+      <td><code>src/main/resources/db/migration/<br>V1__init_schema.sql</code></td>
+      <td>Database Schema</td>
+      <td>Defines PostgreSQL tables, foreign keys, table-level check constraints (<code>stock_available &gt;= 0</code>), partial unique indexes for single-active-claim enforcement, and B-tree indexes for fast queries.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<h2>3. The Modification Playbook ("How to Change Things Easily")</h2>
+<p>
+If an interviewer or senior engineer asks: <em>"How would you add feature X or change requirement Y?"</em>, here are the exact steps and files to touch.
+</p>
+
+<h3>Recipe 1: Adding a New Field to a Deal (e.g. <code>description</code> or <code>discount_percent</code>)</h3>
+<ol>
+  <li><strong>Database Migration:</strong> Create a new Flyway migration file: <code>src/main/resources/db/migration/V2__add_deal_description.sql</code>:
+    <pre><code>ALTER TABLE deals ADD COLUMN description TEXT DEFAULT '' NOT NULL;
+ALTER TABLE deals ADD COLUMN discount_percent INT DEFAULT 0 CHECK (discount_percent BETWEEN 0 AND 100);</code></pre>
+  </li>
+  <li><strong>Update Domain Models:</strong> In <code>com/nnomm/domain/Models.kt</code>:
+    <ul>
+      <li>Add <code>val description: String = ""</code> and <code>val discountPercent: Int = 0</code> to the <code>Deal</code> data class.</li>
+      <li>Add the fields to <code>CreateDealRequest</code> and <code>DealResponse</code>.</li>
+    </ul>
+  </li>
+  <li><strong>Update Repository:</strong> In <code>com/nnomm/repository/DealRepository.kt</code>:
+    <ul>
+      <li>Update <code>mapRowToDeal(rs: ResultSet)</code> to read <code>rs.getString("description")</code> and <code>rs.getInt("discount_percent")</code>.</li>
+      <li>Update the <code>INSERT INTO deals (...)</code> SQL in <code>createDeal()</code> to include the new columns and bind their values.</li>
+    </ul>
+  </li>
+  <li><strong>Update Service Validation:</strong> In <code>com/nnomm/service/DealService.kt</code>, add any business rule checks (e.g. <code>require(request.discountPercent in 0..100)</code>).</li>
+  <li><strong>Done!</strong> Run <code>./gradlew test</code> to verify everything compiles and passes.</li>
+</ol>
+
+<h3>Recipe 2: Changing the Claim Reservation Expiry Duration</h3>
+<ul>
+  <li><strong>Where:</strong> <code>src/main/kotlin/com/nnomm/service/ClaimService.kt</code> (line 148).</li>
+  <li><strong>Current logic:</strong> <code>val expiresAt = now.plusSeconds(config.claimTtlMinutes * 60L)</code> (reads <code>AppConfig.claimTtlMinutes</code> which defaults to 10 minutes).</li>
+  <li><strong>To make it dynamic per deal:</strong>
+    <ol>
+      <li>Add <code>reservation_ttl_seconds INT DEFAULT 600 NOT NULL</code> to the <code>deals</code> table.</li>
+      <li>In <code>ClaimService.kt</code>, change <code>expiresAt</code> calculation to: <code>now.plusSeconds(deal.reservationTtlSeconds.toLong())</code>.</li>
+    </ol>
+  </li>
+</ul>
+
+<h3>Recipe 3: Allowing Multiple Active Claims per Customer for Different Deals</h3>
+<ul>
+  <li><strong>Current Rule:</strong> A customer can only hold 1 active (<code>RESERVED</code> or <code>PAID</code>) claim per deal.</li>
+  <li><strong>Where it is enforced:</strong>
+    <ol>
+      <li><strong>Database Level:</strong> In <code>V1__init_schema.sql</code>:
+        <pre><code>CREATE UNIQUE INDEX idx_claims_unique_active_claim 
+ON claims(deal_id, customer_id) 
+WHERE status IN ('RESERVED', 'PAID', 'NEEDS_REVIEW');</code></pre>
+      </li>
+      <li><strong>Application Level:</strong> In <code>com/nnomm/repository/ClaimRepository.kt</code> inside <code>findActiveClaimByCustomer()</code>.</li>
+    </ol>
+  </li>
+  <li><strong>To change to "1 claim per customer across the ENTIRE platform":</strong> Change the index definition in SQL to <code>ON claims(customer_id) WHERE status IN ('RESERVED', 'PAID')</code>.</li>
+  <li><strong>To allow multiple claims up to a limit (e.g. max 3 units):</strong> Remove the unique index and check <code>SELECT SUM(quantity) FROM claims WHERE customer_id = ? AND deal_id = ? AND status != 'EXPIRED'</code> inside the row-locked transaction.</li>
+</ul>
+
+<h3>Recipe 4: Adding a New Webhook Event (e.g. <code>payment.refunded</code> or <code>payment.chargeback</code>)</h3>
+<ol>
+  <li><strong>Domain Status:</strong> In <code>com/nnomm/domain/Models.kt</code>, add <code>REFUNDED</code> or <code>CHARGEBACK</code> to <code>ClaimStatus</code> enum if needed.</li>
+  <li><strong>Webhook Handler:</strong> In <code>com/nnomm/service/PaymentWebhookService.kt</code>:
+    <pre><code>when (event.eventType) {
+    "payment.succeeded" -> handlePaymentSucceeded(...)
+    "payment.failed" -> handlePaymentFailed(...)
+    "payment.refunded" -> handlePaymentRefunded(...) // New branch
+}</code></pre>
+  </li>
+  <li><strong>Restoring Stock on Refund:</strong> If a refunded claim should return inventory back to the deal, call <code>dealRepository.incrementStock(conn, claim.dealId, claim.quantity)</code> within the same transaction.</li>
+</ol>
+
+<h3>Recipe 5: Scaling to 100,000 Claims/Sec (Redis Pre-Allocation Architecture)</h3>
+<p>
+If an interviewer asks: <em>"Postgres handles ~3,000 claims/sec on a single beefy instance. How do you scale this to 100,000/sec during a massive Black Friday event?"</em>
+</p>
+<ol>
+  <li><strong>Redis Lua Scripting for Atomic Inventory Check &amp; Decrement:</strong>
+    <ul>
+      <li>Load deal inventory into Redis: <code>deal:{id}:stock = 1000</code>.</li>
+      <li>Execute a single Redis Lua script that checks <code>stock &gt;= quantity</code>, decrements atomically, and records customer claim in a Redis Set (for 1-claim limit). This executes in <strong>0.2 milliseconds in single-threaded Redis memory</strong>.</li>
+    </ul>
+  </li>
+  <li><strong>Asynchronous Kafka Event Queue:</strong>
+    <ul>
+      <li>Once Redis accepts the claim, push a <code>ClaimReservedEvent</code> to an Apache Kafka topic partitioned by <code>deal_id</code>.</li>
+      <li>A consumer service pool reads from Kafka and asynchronously inserts the claim into PostgreSQL in batches.</li>
+    </ul>
+  </li>
+  <li><strong>Eventual Consistency with Strict Bounds:</strong> PostgreSQL is protected from traffic spikes, while Redis acts as the high-throughput throttle guarantee.</li>
+</ol>
+
+<div class="page-break"></div>
+
+<h2>4. Concurrency &amp; Data Invariants Deep Dive</h2>
+
+<h3>The "Last Unit" Race Condition Proof</h3>
+<div class="card">
+  <strong>Scenario:</strong> Deal has <code>stock_available = 1</code>. Two requests (Req A and Req B) arrive on separate instances at the exact same millisecond.
+</div>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 15%;">Step</th>
+      <th style="width: 42%;">Request A (Instance 1)</th>
+      <th style="width: 43%;">Request B (Instance 2)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>1. Connect</strong></td>
+      <td>Opens DB connection, sets <code>autoCommit = false</code></td>
+      <td>Opens DB connection, sets <code>autoCommit = false</code></td>
+    </tr>
+    <tr>
+      <td><strong>2. Lock Row</strong></td>
+      <td>Executes <code>SELECT * FROM deals WHERE id = ? FOR UPDATE</code>.<br><strong>PostgreSQL grants ExclusiveLock.</strong></td>
+      <td>Executes <code>SELECT * FROM deals WHERE id = ? FOR UPDATE</code>.<br><strong>PostgreSQL suspends Req B into wait queue.</strong></td>
+    </tr>
+    <tr>
+      <td><strong>3. Check &amp; Mutate</strong></td>
+      <td>Reads <code>stock_available = 1</code>.<br>Executes <code>UPDATE deals SET stock_available = 0</code>.<br>Inserts claim row with status <code>RESERVED</code>.</td>
+      <td><em>Waiting for Row Lock...</em></td>
+    </tr>
+    <tr>
+      <td><strong>4. Commit</strong></td>
+      <td>Commits transaction. PostgreSQL releases Row Lock. Returns HTTP 201 Created.</td>
+      <td><strong>Row Lock acquired!</strong><br>Under <code>READ COMMITTED</code>, PostgreSQL re-evaluates tuple with newly committed data.</td>
+    </tr>
+    <tr>
+      <td><strong>5. Re-check</strong></td>
+      <td>Completed.</td>
+      <td>Req B reads updated <code>stock_available = 0</code>.<br>Evaluates <code>stock_available &lt; quantity (0 &lt; 1)</code>.<br>Throws <code>SoldOutException</code>.<br>Rolls back transaction, returns <strong>HTTP 409 SOLD_OUT</strong>.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Crash-Safe Idempotency State Machine</h3>
+<p>
+Network failures and client retries are handled through a durable 2-phase idempotency protocol stored in the <code>idempotency_keys</code> table:
+</p>
+<div class="diagram">
+Client Request (Key: "k-123")
+      |
+      v
+Query idempotency_keys WHERE key = "k-123" FOR UPDATE
+      |
+      +---> Record Found with status_code != NULL:
+      |     ==> REPLAY stored response immediately with header "Idempotent-Replayed: true"
+      |
+      +---> Record Found with status_code == NULL AND locked_until &gt; NOW:
+      |     ==> Request currently running on another thread or pod.
+      |     ==> Return HTTP 409 REQUEST_IN_PROGRESS
+      |
+      +---> Record Found with status_code == NULL AND locked_until &lt;= NOW:
+      |     ==> Previous pod crashed mid-request!
+      |     ==> Renew lock lease: locked_until = NOW + 60s
+      |     ==> Re-execute claim transaction safely
+      |
+      +---> No Record Found:
+            ==> Insert new record: locked_until = NOW + 60s, status_code = NULL
+            ==> Execute claim transaction: decrement stock, insert claim
+            ==> Update idempotency_keys SET status_code = 201, response_body = '...'
+            ==> Commit and return HTTP 201 Created
+</div>
+
+<h3>Webhook vs Expiry Worker Race Condition Matrix</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Race Scenario</th>
+      <th>Who Wins Lock First</th>
+      <th>Winner Action</th>
+      <th>Loser Action</th>
+      <th>Final State &amp; Stock Invariant</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Late Payment Arrives After Expiry</strong></td>
+      <td>Expiry Worker</td>
+      <td>Marks claim <code>EXPIRED</code>, adds +1 back to <code>stock_available</code>. Commits.</td>
+      <td>Webhook acquires lock, sees status is <code>EXPIRED</code>. Transitions status to <code>REFUND_PENDING</code>. Does NOT alter stock.</td>
+      <td>Claim: <code>REFUND_PENDING</code>.<br>Stock: Unit remains in stock for others.<br><strong>Zero inventory lost.</strong></td>
+    </tr>
+    <tr>
+      <td><strong>Payment Arrives Exactly at Expiry</strong></td>
+      <td>Payment Webhook</td>
+      <td>Sees status <code>RESERVED</code>. Transitions to <code>PAID</code>. Keeps stock held. Commits.</td>
+      <td>Expiry worker acquires lock, sees status is <code>PAID</code> (not <code>RESERVED</code>). Ignores claim.</td>
+      <td>Claim: <code>PAID</code>.<br>Stock: Remains claimed.<br><strong>Customer successfully gets deal.</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<h2>5. Staff-Level Technical Interview Questions &amp; Answers</h2>
+<p>
+These are 15 deep, realistic questions commonly asked at top tech companies (Uber, Amazon, Stripe, DoorDash, Swiggy) for Backend and Distributed Systems roles.
+</p>
+
+<div class="qa-box">
+  <div class="q-title">Q1: Why did you use PostgreSQL row-level locks (<code>FOR UPDATE</code>) instead of a Kotlin Mutex or Java <code>synchronized</code> block?</div>
+  <p>
+    <strong>Answer:</strong> Mutexes and synchronization primitives only operate within the memory space of a single JVM process. In production, we run multiple service instances behind a load balancer (as demonstrated in our <code>docker-compose.yml</code> running Instance 1 on 8080 and Instance 2 on 8081). Two requests routed to different instances would acquire two separate local mutexes simultaneously, resulting in a race condition and overselling. PostgreSQL provides a single, centralized lock manager in shared memory that coordinates across all instances.
+  </p>
+</div>
+
+<div class="qa-box">
+  <div class="q-title">Q2: What is the purpose of <code>SKIP LOCKED</code> in the background expiry worker?</div>
+  <p>
+    <strong>Answer:</strong> Without <code>SKIP LOCKED</code>, if we run multiple instances of the expiry worker, Worker 1 would issue <code>SELECT ... FOR UPDATE</code> and lock the first 50 rows. Worker 2 running the same query would block and stall waiting for Worker 1 to finish, causing latency and thread starvation. With <code>SKIP LOCKED</code>, PostgreSQL skips any row that is currently locked by another transaction, allowing Worker 2 to immediately pick up the next batch of rows without waiting or deadlocking.
+  </p>
+</div>
+
+<div class="qa-box">
+  <div class="q-title">Q3: How do you prevent webhook replay attacks?</div>
+  <p>
+    <strong>Answer:</strong> We enforce three independent layers of defense:
+    <br>1. <strong>Timestamp Check:</strong> The webhook header contains a Unix timestamp. We reject any request where <code>|now - timestamp| &gt; 300 seconds</code> (5 minutes). This prevents attackers from replaying captured packets later.
+    <br>2. <strong>HMAC Signature:</strong> The payload signature is computed over <code>timestamp + "." + rawBody</code> using HMAC-SHA256. An attacker cannot tamper with the timestamp without invalidating the signature.
+    <br>3. <strong>Database Deduplication:</strong> We record every processed <code>event_id</code> in the <code>payment_events</code> table. If the same <code>event_id</code> arrives again, our unique constraint catches it and we return HTTP 200 without re-processing.
+  </p>
+</div>
+
+<div class="qa-box">
+  <div class="q-title">Q4: Why do you return HTTP 404 instead of HTTP 403 when a customer requests a claim belonging to someone else?</div>
+  <p>
+    <strong>Answer:</strong> This is a crucial security practice known as preventing <em>Resource Enumeration and Information Disclosure</em>. If we returned 403 Forbidden, an attacker could iterate through UUIDs to discover which claim IDs exist on our platform. Returning 404 Not Found ensures that an unauthorized user cannot distinguish between a claim that does not exist and a claim belonging to another customer.
+  </p>
+</div>
+
+<div class="qa-box">
+  <div class="q-title">Q5: What happens if the server crashes after decrementing stock and creating the claim, but before returning the HTTP 201 response to the client?</div>
+  <p>
+    <strong>Answer:</strong> The claim and the HTTP response status (201) are saved in the database within the <em>same atomic transaction</em>. When the client's network library inevitably times out and retries with the same <code>Idempotency-Key</code>, the service queries <code>idempotency_keys</code>, finds the completed record, and replays the stored 201 Created response with the header <code>Idempotent-Replayed: true</code>. No new claim is created, and no inventory is deducted twice.
+  </p>
+</div>
+
+<div class="qa-box">
+  <div class="q-title">Q6: What happens if the server crashes *during* the transaction before committing?</div>
+  <p>
+    <strong>Answer:</strong> When the server process or container terminates, the TCP connection to PostgreSQL drops. PostgreSQL detects the socket disconnect and automatically issues a <code>ROLLBACK</code> on any open transaction. Stock is not decremented, and no claim is created. Furthermore, the <code>idempotency_keys</code> row has a <code>locked_until</code> lease of 60 seconds. During those 60 seconds, retries receive 409 Conflict (<code>REQUEST_IN_PROGRESS</code>). Once 60 seconds pass, the expired lock is renewed and the retry executes cleanly.
+  </p>
+</div>
+
+<div class="qa-box">
+  <div class="q-title">Q7: Why did you choose raw JDBC over an ORM like Hibernate or Exposed?</div>
+  <p>
+    <strong>Answer:</strong> For high-concurrency systems, predictability of SQL execution is paramount:
+    <br>1. ORMs frequently introduce N+1 query problems and automatic dirty-checking flushes that can hold database row locks longer than necessary.
+    <br>2. Explicit constructs like <code>FOR UPDATE SKIP LOCKED</code> and database check constraints are first-class in raw SQL.
+    <br>3. Performance: Raw JDBC prepared statements with HikariCP connection pooling have virtually zero CPU and memory allocation overhead compared to reflection-heavy ORM entity managers.
+  </p>
+</div>
+
+<div class="qa-box">
+  <div class="q-title">Q8: Why is <code>MessageDigest.isEqual</code> used in HMAC verification instead of standard string equality (<code>==</code>)?</div>
+  <p>
+    <strong>Answer:</strong> Standard string equality operators (like <code>strA == strB</code> or <code>.equals()</code>) exit early on the first mismatched character. An attacker measuring request response times with high-precision network probes can determine how many leading bytes of their forged signature matched, allowing them to brute-force the signature byte-by-byte (a <em>timing attack</em>). <code>MessageDigest.isEqual</code> executes in constant time regardless of where the mismatch occurs, neutralizing timing attacks.
+  </p>
+</div>
+
+<div class="qa-box">
+  <div class="q-title">Q9: What database isolation level does the service use, and why is it sufficient?</div>
+  <p>
+    <strong>Answer:</strong> We use PostgreSQL's default <code>READ COMMITTED</code> isolation level. While <code>READ COMMITTED</code> is vulnerable to non-repeatable reads in ordinary queries, we use explicit pessimistic locking (<code>SELECT ... FOR UPDATE</code>) on both the deal row and the claim row. In PostgreSQL, <code>FOR UPDATE</code> locks the row tuple directly, forcing concurrent transactions to serialize. This gives us strict serializability on mutating paths without paying the high abort-and-retry cost of <code>SERIALIZABLE</code> isolation level.
+  </p>
+</div>
+
+<div class="qa-box">
+  <div class="q-title">Q10: Why do we have database-level check constraints (<code>CHECK (stock_available &gt;= 0)</code>) if the application code already checks stock?</div>
+  <p>
+    <strong>Answer:</strong> Defense-in-depth. Application code can have bugs, developer oversights, or unexpected edge cases during schema refactoring. A database check constraint is an inviolable mathematical invariant enforced by the storage engine itself. If any query ever attempts to set <code>stock_available</code> below zero, PostgreSQL immediately aborts the transaction with an error, preventing catastrophic inventory overselling under any circumstance.
+  </p>
+</div>
+
+<div class="qa-box">
+  <div class="q-title">Q11: How do you handle lazy claim expiration on <code>GET /v1/claims/{id}</code>?</div>
+  <p>
+    <strong>Answer:</strong> The background expiry worker runs on a 10-second interval. It is possible that a claim passes its <code>expires_at</code> timestamp 2 seconds before the worker's next tick. If the customer calls <code>GET /v1/claims/{id}</code> during this 2-second window, the brief requires that the API must never display it as <code>RESERVED</code>. In <code>ClaimRoutes.kt</code>, when reading the claim, if <code>status == RESERVED &amp;&amp; Instant.now().isAfter(expiresAt)</code>, the API dynamically maps the returned status in the JSON response to <code>EXPIRED</code>.
+  </p>
+</div>
+
+<div class="qa-box">
+  <div class="q-title">Q12: How would you prevent a distributed denial-of-service (DDoS) attack targeting the claim endpoint?</div>
+  <p>
+    <strong>Answer:</strong>
+    <br>1. <strong>Payload Limiter:</strong> We restrict incoming request bodies to 16KB max using our <code>PayloadLimitPlugin</code>.
+    <br>2. <strong>Rate Limiting at Edge/API Gateway:</strong> Implement Token Bucket or Leaky Bucket algorithms (e.g. via Cloudflare or AWS API Gateway / Kong) based on IP address and Customer ID (e.g. max 5 requests per second per IP).
+    <br>3. <strong>Fast-Path Cache Validation:</strong> In front of the database, check an in-memory Redis boolean flag <code>deal:{id}:is_active</code>. If the deal has already ended or is marked sold out, reject incoming requests immediately at the edge without querying PostgreSQL.
+  </p>
+</div>
+
+<div class="qa-box">
+  <div class="q-title">Q13: Why is the payment amount verified against <code>deals.price_paise * quantity</code> in the webhook?</div>
+  <p>
+    <strong>Answer:</strong> Payment gateways can occasionally be misconfigured, or a malicious client might have altered the price on the frontend before calling the payment SDK. If the webhook reports a paid amount less than the required amount, we transition the claim status to <code>NEEDS_REVIEW</code> rather than granting the deal. This alerts human operations to audit the discrepancy while preventing inventory loss.
+  </p>
+</div>
+
+<div class="qa-box">
+  <div class="q-title">Q14: How does the system handle database connection pool exhaustion under load?</div>
+  <p>
+    <strong>Answer:</strong> We use HikariCP configured with bounded parameters: <code>maximumPoolSize = 20</code>, <code>connectionTimeout = 5000ms</code>. If all connections are occupied, incoming requests wait up to 5 seconds before failing fast with a 503 Service Unavailable rather than hanging indefinitely. More importantly, our transactions are designed to do only pure SQL operations—no network calls, webhook dispatches, or heavy computations are ever made while holding an active database connection.
+  </p>
+</div>
+
+<div class="qa-box">
+  <div class="q-title">Q15: How were the tests written to guarantee concurrency correctness?</div>
+  <p>
+    <strong>Answer:</strong> We use embedded real PostgreSQL with Kotlin Coroutines <code>async(Dispatchers.IO)</code>. In <code>ConcurrencyTest.kt</code>, we fire 200 simultaneous coroutine workers claiming a 50-unit deal concurrently using <code>awaitAll()</code>. We verify that exactly 50 succeed, 150 receive 409 Sold Out, and the database <code>stock_available</code> ends at exactly 0. We also test 25 simultaneous requests with the exact same <code>Idempotency-Key</code>, confirming that exactly one claim is created.
+  </p>
+</div>
+
+<div class="page-break"></div>
+
+<h2>6. Local Testing &amp; Git Push Instructions</h2>
+
+<h3>Automated Test Suite Summary</h3>
+<p>
+The test suite runs against a fully-functional embedded PostgreSQL instance, validating all concurrency, authorization, idempotency, and webhook behaviors:
+</p>
+<pre><code>$ ./gradlew test --no-daemon
+
+LifecycleAndExpiryTest &gt; testDealNotLiveBeforeOrAfter() PASSED
+LifecycleAndExpiryTest &gt; testClaimExpiryReclaimsUnitsAndHidesReservedStatus() PASSED
+LifecycleAndExpiryTest &gt; testReplayedConflictStaysConflict() PASSED
+LifecycleAndExpiryTest &gt; testIdempotencyReusedWithDifferentParameters() PASSED
+AuthAndVisibilityTest &gt; testRoleRestrictionsOnEndpoints() PASSED
+AuthAndVisibilityTest &gt; testClaimVisibilityRestrictions() PASSED
+AuthAndVisibilityTest &gt; testJwtTokenSecurity() PASSED
+ConcurrencyTest &gt; test200ConcurrentClaimsNeverOversell() PASSED
+ConcurrencyTest &gt; testPaymentAndExpiryRaceLeavesStockInvariantIntact() PASSED
+ConcurrencyTest &gt; testConcurrentRequestsWithSameIdempotencyKey() PASSED
+ConcurrencyTest &gt; testConcurrentClaimsBySameCustomerWithDifferentKeys() PASSED
+WebhookTest &gt; testBadSignatureRejected() PASSED
+WebhookTest &gt; testPaymentAmountMismatchMovesToNeedsReview() PASSED
+WebhookTest &gt; testPaymentFailedDoesNotChangeStatus() PASSED
+WebhookTest &gt; testStaleTimestampRejected() PASSED
+WebhookTest &gt; testDuplicateEventsAreIdempotent() PASSED
+
+BUILD SUCCESSFUL: 16 actionable tests, 16 passed (100% pass rate)</code></pre>
+
+<h3>Git Status &amp; How to Push to GitHub / GitLab</h3>
+<div class="card">
+  <strong>No remote repository is currently attached:</strong><br>
+  All work is committed to your local Git history. To push to your GitHub or GitLab account:
+  <pre><code># 1. Create a new empty repository on GitHub / GitLab (e.g. "nnomm-flash-deal")
+# 2. Open PowerShell or Terminal in e:Projects
+nomm
+# 3. Add your remote URL:
+git remote add origin https://github.com/&lt;your-username&gt;/&lt;your-repo-name&gt;.git
+
+# 4. Push your branch:
+git branch -M main
+git push -u origin main</code></pre>
+</div>
+
+<h3>Running the Live Service with Multi-Instance Docker Compose</h3>
+<pre><code># Build and start PostgreSQL + Instance 1 (8080) + Instance 2 (8081)
+docker compose up --build
+
+# In a separate terminal, test health:
+curl http://localhost:8080/health
+curl http://localhost:8081/health</code></pre>
+
+<div style="margin-top: 36px; padding-top: 12px; border-top: 1px solid #cbd5e1; font-size: 9pt; color: #64748b; text-align: center;">
+  Nnomm Flash-Deal Claim Service &bull; Architecture, Concurrency, and System Design Documentation
+</div>
+
+</body>
+</html>

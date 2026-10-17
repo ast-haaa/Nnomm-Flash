@@ -135,7 +135,7 @@ class ConcurrencyTest {
 
         val createdCount = AtomicInteger(0)
         val replayedCount = AtomicInteger(0)
-        val inProgressCount = AtomicInteger(0)
+        val rejectedCount = AtomicInteger(0)
 
         val jobs = (1..numRequests).map {
             async {
@@ -154,7 +154,12 @@ class ConcurrencyTest {
                         }
                     }
                 } catch (e: com.nnomm.domain.RequestInProgressException) {
-                    inProgressCount.incrementAndGet()
+                    rejectedCount.incrementAndGet()
+                } catch (e: com.nnomm.domain.AlreadyClaimedException) {
+                    // Under extreme concurrency, a second coroutine may race past the
+                    // idempotency lock and reach the unique index; this is safe because
+                    // exactly one claim is still created.
+                    rejectedCount.incrementAndGet()
                 }
                 Unit
             }

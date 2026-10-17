@@ -151,8 +151,8 @@ class LifecycleAndExpiryTest {
             claimService.claimDeal(customer, deal.id, key, ClaimRequest(1))
         }
 
-        // Even if more units free up later, replaying the same key stays SOLD_OUT!
-        dealRepository.incrementStock(db.dataSource.connection, deal.id, 10)
+        // Even if 1 unit frees up later (e.g. claim expired/cancelled), replaying the same key stays SOLD_OUT!
+        db.withConnection { conn -> dealRepository.incrementStock(conn, deal.id, 1) }
 
         // Replaying same key returns SOLD_OUT
         val replayed = claimService.claimDeal(customer, deal.id, key, ClaimRequest(1))
