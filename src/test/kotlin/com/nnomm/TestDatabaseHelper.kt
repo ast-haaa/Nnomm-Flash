@@ -41,11 +41,8 @@ object TestDatabaseHelper {
 
         if (dockerAvailable) {
             log.info("USE_TESTCONTAINERS is enabled. Starting Testcontainers PostgreSQL 15 container...")
-            val testDbPass = System.getenv("TEST_DB_PASSWORD") ?: System.getProperty("test.db.password", "test_pg_pass_123")
             val container = PostgreSQLContainer("postgres:15-alpine")
                 .withDatabaseName("nnomm_test")
-                .withUsername("postgres")
-                .withPassword(testDbPass)
             container.start()
             pgContainer = container
 
@@ -79,10 +76,10 @@ object TestDatabaseHelper {
         return AppConfig(
             port = 8080,
             databaseUrl = pg.getJdbcUrl("postgres", "postgres"),
-            databaseUser = "postgres",
-            databasePass = "postgres",
-            jwtSecret = "super-secret-jwt-key-for-testing-at-least-32-chars-long",
-            webhookSecret = "super-secret-webhook-key-for-testing-at-least-32-chars",
+            databaseUser = System.getenv("TEST_DB_USER") ?: "postgres",
+            databasePass = System.getenv("TEST_DB_PASS") ?: "",
+            jwtSecret = System.getenv("TEST_JWT_SECRET") ?: "test_jwt_secret_token_key_32_characters_minimum",
+            webhookSecret = System.getenv("TEST_WEBHOOK_SECRET") ?: "test_webhook_secret_key_32_characters_minimum",
             claimTtlSeconds = 600L
         )
     }
