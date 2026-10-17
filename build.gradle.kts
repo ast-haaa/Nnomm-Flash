@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.time.Instant
 
 plugins {
     // Core Spring Boot & Dependency Management plugins
@@ -169,11 +170,13 @@ tasks.bootJar {
 
     manifest {
         attributes(
-            "Implementation-Title" to project.name,
-            "Implementation-Version" to project.version,
-            "Built-By" to "Nnomm Engineering Team",
-            "Build-Jdk" to System.getProperty("java.version"),
-            "Build-Time" to java.time.Instant.now().toString()
+            mapOf(
+                "Implementation-Title" to project.name,
+                "Implementation-Version" to project.version,
+                "Built-By" to "Nnomm Engineering Team",
+                "Build-Jdk" to (System.getProperty("java.version") ?: "unknown"),
+                "Build-Time" to Instant.now().toString()
+            )
         )
     }
 }

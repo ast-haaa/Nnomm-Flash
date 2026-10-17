@@ -41,10 +41,11 @@ object TestDatabaseHelper {
 
         if (dockerAvailable) {
             log.info("USE_TESTCONTAINERS is enabled. Starting Testcontainers PostgreSQL 15 container...")
+            val testDbPass = System.getenv("TEST_DB_PASSWORD") ?: System.getProperty("test.db.password", "test_pg_pass_123")
             val container = PostgreSQLContainer("postgres:15-alpine")
                 .withDatabaseName("nnomm_test")
                 .withUsername("postgres")
-                .withPassword("postgres")
+                .withPassword(testDbPass)
             container.start()
             pgContainer = container
 
