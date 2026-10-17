@@ -10,7 +10,9 @@ A high-concurrency flash-deal reservation and claim service built in **Kotlin** 
 - **Java 17+** (OpenJDK / Temurin 17+)
 - **Docker & Docker Compose** (for multi-instance verification)
 
-### 2. Running Locally with Docker Compose
+### 2. Running Locally
+
+#### Option A: Docker Compose (Multi-Instance Setup)
 Starts PostgreSQL 15 and two instances of the service on ports `8080` and `8081` sharing the same database:
 
 ```bash
@@ -22,6 +24,15 @@ Health check:
 curl http://localhost:8080/health
 curl http://localhost:8081/health
 ```
+
+#### Option B: Standalone Dev Mode with Embedded PostgreSQL (Zero-Setup)
+Runs the service and interactive web dashboard on `http://localhost:8080` with an embedded PostgreSQL database (no Docker required):
+
+```bash
+./gradlew devRun
+# On Windows: gradlew.bat devRun
+```
+Then open `http://localhost:8080` in your browser.
 
 ### 3. Running the Test Suite
 The automated test suite verifies all data integrity and concurrency invariants against real PostgreSQL:
