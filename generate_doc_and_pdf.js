@@ -183,15 +183,65 @@ const htmlContent = `<!DOCTYPE html>
 
 <h2>Table of Contents</h2>
 <ol>
-  <li><strong>Executive Architecture Overview</strong> (Design Philosophy &amp; High-Level Flow)</li>
-  <li><strong>Complete Codebase Map ("Where is Where")</strong> (Every file explained)</li>
-  <li><strong>The Modification Playbook ("How to Change Things Easily")</strong> (Step-by-step recipes)</li>
-  <li><strong>Concurrency &amp; Data Invariants Deep Dive</strong> (PostgreSQL row locks, MVCC, idempotency state machine)</li>
-  <li><strong>Staff-Level Technical Interview Questions &amp; Answers</strong> (15 detailed questions)</li>
-  <li><strong>Local Testing &amp; Git Instructions</strong></li>
+  <li><strong>0. What is this Project About? (The Real-World Business Problem)</strong></li>
+  <li><strong>1. Executive Architecture Overview</strong> (Design Philosophy &amp; High-Level Flow)</li>
+  <li><strong>2. Complete Codebase Map ("Where is Where")</strong> (Every file explained)</li>
+  <li><strong>3. The Modification Playbook ("How to Change Things Easily")</strong> (Step-by-step recipes)</li>
+  <li><strong>4. Concurrency &amp; Data Invariants Deep Dive</strong> (PostgreSQL row locks, MVCC, idempotency state machine)</li>
+  <li><strong>5. Staff-Level Technical Interview Questions &amp; Answers</strong> (15 detailed questions)</li>
+  <li><strong>6. Local Testing &amp; Git Instructions</strong></li>
 </ol>
 
 <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;">
+
+<h2>0. What is this Project About? (The Real-World Business Problem)</h2>
+
+<div class="card">
+  <strong>In Simple Terms:</strong><br>
+  Nnomm is a flash-deal food platform (similar to Swiggy Dineout, Zomato Gold, or Groupon). Restaurants publish limited-quantity, heavily-discounted offers (e.g. <em>"50% off Luxury 5-Course Dinner &mdash; Only 10 vouchers available at 8:00 PM!"</em>).<br><br>
+  This repository is the <strong>core, mission-critical reservation &amp; claim backend engine</strong> designed to handle the intense traffic spikes when thousands of customers compete for those 10 units at the exact same millisecond.
+</div>
+
+<h3>The 5 Real-World Catastrophes in Flash Sales (Why this service was built)</h3>
+
+<table style="margin-top: 10px;">
+  <thead>
+    <tr>
+      <th style="width: 25%;">Real-World Challenge</th>
+      <th style="width: 35%;">The Nightmare Failure (Without this engine)</th>
+      <th style="width: 40%;">How this Project Solves It</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>1. Massive Concurrency &amp; Overselling</strong></td>
+      <td>At 8:00:00 PM, 5,000 hungry users hit "Claim" for the last 1 remaining burger. Two separate servers read <code>stock = 1</code> at the same instant and both sell it! 15 customers arrive at the restaurant with valid vouchers for only 10 seats, causing legal issues, chargebacks, and brand destruction.</td>
+      <td><strong>Tuple-Level Row Locking (<code>FOR UPDATE</code>) &amp; DB Check Constraints:</strong> PostgreSQL serializes competing requests across all server instances. <code>CHECK (stock_available &gt;= 0)</code> physically forbids overselling at the database engine level.</td>
+    </tr>
+    <tr>
+      <td><strong>2. Network Flakiness &amp; Double-Charging</strong></td>
+      <td>A user on a weak 4G connection clicks "Claim". The request succeeds on the server, but the network drops before the confirmation reaches the phone. Panicking, the customer taps "Claim" 5 more times and gets charged 5 times.</td>
+      <td><strong>Durable 2-Phase Idempotency:</strong> Every request requires an <code>Idempotency-Key</code>. The server recognizes the retry, skips inventory deduction, and replays the original response (<code>Idempotent-Replayed: true</code>).</td>
+    </tr>
+    <tr>
+      <td><strong>3. Inventory Hoarding &amp; Abandoned Claims</strong></td>
+      <td>A customer claims the last voucher and is redirected to the payment gateway. They get distracted, close the app, or refuse to pay. If that unit stays locked, the restaurant loses a paying customer.</td>
+      <td><strong>Automated Non-Blocking Expiry Worker:</strong> Claims are reserved for 10 minutes. A background worker using PostgreSQL <code>SKIP LOCKED</code> sweeps expired claims every 10s and automatically returns inventory to the pool.</td>
+    </tr>
+    <tr>
+      <td><strong>4. Millisecond Payment vs. Expiry Race</strong></td>
+      <td>A customer finishes entering their OTP at 9 minutes and 59 seconds. The payment gateway webhook arrives at the exact same millisecond the background expiry worker sweeps the claim.</td>
+      <td><strong>Coordinated State Machine &amp; Row Serialization:</strong> Both processes lock the claim row. If payment wins, claim becomes <code>PAID</code>. If expiry wins, claim becomes <code>REFUND_PENDING</code>, protecting inventory and customer money.</td>
+    </tr>
+    <tr>
+      <td><strong>5. Webhook Spoofing &amp; Replay Attacks</strong></td>
+      <td>An attacker intercepts a successful payment webhook payload and replays it 100 times to get free meals or forge fake payments.</td>
+      <td><strong>HMAC-SHA256 Signatures &amp; Deduplication:</strong> Webhooks require timestamped cryptographic signatures verified in constant time (<code>MessageDigest.isEqual</code>) with 5-minute replay expiry and <code>payment_events</code> deduplication.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
 
 <h2>1. Executive Architecture Overview</h2>
 <p>
