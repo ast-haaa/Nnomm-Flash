@@ -65,6 +65,7 @@ fun Application.module(
         claimService = claimService,
         paymentWebhookService = paymentWebhookService,
         jwtService = jwtService,
+        hmacService = hmacService,
         json = json
     )
 }
