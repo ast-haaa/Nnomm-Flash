@@ -72,3 +72,10 @@ tasks.test {
         events("passed", "skipped", "failed")
     }
 }
+
+tasks.register<JavaExec>("devRun") {
+    group = "application"
+    description = "Runs the development server on http://localhost:8080 with embedded PostgreSQL"
+    classpath = sourceSets["test"].runtimeClasspath
+    mainClass.set("com.nnomm.DevServerKt")
+}
