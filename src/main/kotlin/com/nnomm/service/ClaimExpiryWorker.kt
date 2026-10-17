@@ -10,8 +10,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
+import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.stereotype.Component
 import java.time.Instant
 
+@Component
 class ClaimExpiryWorker(
     private val db: DatabaseFactory,
     private val claimRepository: ClaimRepository = ClaimRepository(),
@@ -20,6 +23,15 @@ class ClaimExpiryWorker(
 ) {
     private val log = LoggerFactory.getLogger(ClaimExpiryWorker::class.java)
     private var job: Job? = null
+
+    @Scheduled(fixedDelayString = "\${nnomm.expiry-worker-interval-ms:1000}")
+    fun scheduledSweep() {
+        try {
+            sweepExpiredClaims()
+        } catch (e: Exception) {
+            log.error("Error during scheduled claim expiry sweep", e)
+        }
+    }
 
     fun start(scope: CoroutineScope = CoroutineScope(Dispatchers.IO)) {
         if (job != null) return

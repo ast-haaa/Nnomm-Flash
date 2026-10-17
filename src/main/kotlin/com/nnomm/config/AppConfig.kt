@@ -1,13 +1,17 @@
 package com.nnomm.config
 
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Component
+
+@Component
 data class AppConfig(
-    val port: Int,
-    val databaseUrl: String,
-    val databaseUser: String,
-    val databasePass: String,
-    val jwtSecret: String,
-    val webhookSecret: String,
-    val claimTtlSeconds: Long
+    @Value("\${server.port:8080}") val port: Int = 8080,
+    @Value("\${spring.datasource.url:jdbc:postgresql://localhost:5432/nnomm}") val databaseUrl: String = "jdbc:postgresql://localhost:5432/nnomm",
+    @Value("\${spring.datasource.username:postgres}") val databaseUser: String = "postgres",
+    @Value("\${spring.datasource.password:postgres}") val databasePass: String = "postgres",
+    @Value("\${nnomm.jwt-secret:default_insecure_jwt_secret_for_local_dev_only_32_bytes_min}") val jwtSecret: String = "default_insecure_jwt_secret_for_local_dev_only_32_bytes_min",
+    @Value("\${nnomm.webhook-secret:default_insecure_webhook_secret_for_dev_min_32_bytes}") val webhookSecret: String = "default_insecure_webhook_secret_for_dev_min_32_bytes",
+    @Value("\${nnomm.claim-ttl-seconds:600}") val claimTtlSeconds: Long = 600L
 ) {
     companion object {
         fun fromEnv(): AppConfig {

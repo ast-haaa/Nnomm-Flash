@@ -1,24 +1,30 @@
 package com.nnomm.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.nnomm.database.DatabaseFactory
 import com.nnomm.domain.ClaimStatus
 import com.nnomm.domain.NotFoundException
+import com.nnomm.domain.ValidationException
 import com.nnomm.domain.WebhookPayload
 import com.nnomm.repository.ClaimRepository
 import com.nnomm.repository.DealRepository
 import com.nnomm.repository.PaymentEventRepository
 import com.nnomm.security.HmacService
-import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
 import java.time.Instant
 
+@Service
 class PaymentWebhookService(
     private val hmacService: HmacService,
     private val db: DatabaseFactory,
     private val claimRepository: ClaimRepository = ClaimRepository(),
     private val dealRepository: DealRepository = DealRepository(),
     private val paymentEventRepository: PaymentEventRepository = PaymentEventRepository(),
-    private val json: Json = Json { ignoreUnknownKeys = true }
+    private val objectMapper: ObjectMapper = jacksonObjectMapper().registerModule(JavaTimeModule())
 ) {
     private val log = LoggerFactory.getLogger(PaymentWebhookService::class.java)
 
@@ -28,9 +34,9 @@ class PaymentWebhookService(
 
         // 2. Deserialize payload
         val payload = try {
-            json.decodeFromString<WebhookPayload>(rawBody.toString(Charsets.UTF_8))
+            objectMapper.readValue<WebhookPayload>(rawBody)
         } catch (e: Exception) {
-            throw com.nnomm.domain.ValidationException("Malformed webhook payload")
+            throw ValidationException("Malformed webhook payload")
         }
 
         val now = Instant.now()

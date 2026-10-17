@@ -1,0 +1,39 @@
+# ==============================================================================
+# Nnomm Flash-Deal Claim Service Configuration
+# ==============================================================================
+
+# Server HTTP Port (defaults to 8080, overridable via PORT env var)
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: nnomm-flash-claim
+  # PostgreSQL Database Connection
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/nnomm}
+    username: ${DATABASE_USER:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+    # High-Performance HikariCP Connection Pool Settings
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 5000
+      idle-timeout: 300000
+      max-lifetime: 1800000
+  # Automatic Flyway Database Migrations
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+# Business & Security Settings
+nnomm:
+  # Secret key used to sign and verify HMAC-SHA256 JWT tokens
+  jwt-secret: ${JWT_SECRET:default_insecure_jwt_secret_for_local_dev_only_32_bytes_min}
+  # Webhook secret used to verify payment provider signatures
+  webhook-secret: ${WEBHOOK_SECRET:default_insecure_webhook_secret_for_dev_min_32_bytes}
+  # Time-to-Live for RESERVED claims in seconds (default: 600s = 10 minutes)
+  claim-ttl-seconds: ${CLAIM_TTL_SECONDS:600}
+  # Background worker sweep interval in milliseconds (default: 1000ms = 1s)
+  expiry-worker-interval-ms: ${EXPIRY_WORKER_INTERVAL_MS:1000}

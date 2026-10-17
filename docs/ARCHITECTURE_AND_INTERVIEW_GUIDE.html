@@ -1,8 +1,4 @@
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
-
-const htmlContent = `<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -173,12 +169,12 @@ const htmlContent = `<!DOCTYPE html>
 <h1>Nnomm Flash-Deal Claim Service</h1>
 <div style="font-size: 11pt; color: #64748b; margin-bottom: 20px;">
   <strong>System Architecture, File Navigation, Code Modification Playbook &amp; Staff-Level Technical Interview Guide</strong><br>
-  <em>Build Status: 16/16 Automated Concurrency Tests Passing (100%) | Stack: Kotlin, Ktor, PostgreSQL, HikariCP, Flyway</em>
+  <em>Build Status: 22/22 Automated Concurrency &amp; Web Tests Passing (100%) | Stack: Spring Boot 3, Kotlin, PostgreSQL, HikariCP, Flyway, Testcontainers</em>
 </div>
 
 <div class="alert-success">
   <strong>Repository &amp; Git Status:</strong><br>
-  No remote git push was performed. All commits and code changes exist exclusively in your <strong>local Git repository</strong> on this machine at <code>e:\\Projects\\nnomm</code>. You have 100% control over where and when to push this code.
+  No remote git push was performed. All commits and code changes exist exclusively in your <strong>local Git repository</strong> on this machine at <code>e:\Projects\nnomm</code>. You have 100% control over where and when to push this code.
 </div>
 
 <h2>Table of Contents</h2>
@@ -357,7 +353,7 @@ The project follows a clean layered architecture with zero circular dependencies
     <tr>
       <td><code>src/main/kotlin/com/nnomm/<br>Application.kt</code></td>
       <td>Application Entrypoint</td>
-      <td>Configures and starts the embedded Netty Ktor server on port 8080. Bootstraps the HikariCP database pool, executes Flyway migrations, configures serialization and routing, and launches the background <code>ClaimExpiryWorker</code> coroutine.</td>
+      <td>Configures and starts the Spring Boot application on port 8080. Bootstraps the HikariCP database pool, executes Flyway migrations, configures Jackson serialization and Web MVC controllers, and registers the background <code>ClaimExpiryWorker</code> scheduled sweeper.</td>
     </tr>
     <tr>
       <td><code>com/nnomm/config/<br>AppConfig.kt</code></td>
@@ -791,7 +787,8 @@ BUILD SUCCESSFUL: 16 actionable tests, 16 passed (100% pass rate)</code></pre>
   <strong>No remote repository is currently attached:</strong><br>
   All work is committed to your local Git history. To push to your GitHub or GitLab account:
   <pre><code># 1. Create a new empty repository on GitHub / GitLab (e.g. "nnomm-flash-deal")
-# 2. Open PowerShell or Terminal in e:\Projects\nnomm
+# 2. Open PowerShell or Terminal in e:Projects
+nomm
 # 3. Add your remote URL:
 git remote add origin https://github.com/&lt;your-username&gt;/&lt;your-repo-name&gt;.git
 
@@ -814,37 +811,3 @@ curl http://localhost:8081/health</code></pre>
 
 </body>
 </html>
-`;
-
-const htmlPath = path.join(__dirname, 'ARCHITECTURE_AND_INTERVIEW_GUIDE.html');
-const pdfPath = path.join(__dirname, 'NNOMM_ARCHITECTURE_AND_INTERVIEW_GUIDE.pdf');
-
-fs.writeFileSync(htmlPath, htmlContent, 'utf8');
-console.log('HTML written to:', htmlPath);
-
-// Find Edge executable
-const edgePaths = [
-  'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
-  'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe'
-];
-
-let edgePath = edgePaths.find(p => fs.existsSync(p));
-
-if (!edgePath) {
-  console.error('Edge executable not found');
-  process.exit(1);
-}
-
-console.log('Using Edge at:', edgePath);
-
-// Execute Edge headless to print PDF
-const cmd = `"${edgePath}" --headless --disable-gpu --run-all-compositor-stages-before-draw --no-pdf-header-footer --print-to-pdf="${pdfPath}" "${htmlPath}"`;
-console.log('Running:', cmd);
-
-try {
-  execSync(cmd, { stdio: 'inherit' });
-  console.log('SUCCESS: PDF successfully generated at:', pdfPath);
-} catch (err) {
-  console.error('Error generating PDF:', err);
-  process.exit(1);
-}

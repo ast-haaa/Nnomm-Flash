@@ -9,8 +9,10 @@ import com.nnomm.domain.UserRole
 import com.nnomm.domain.ValidationException
 import com.nnomm.repository.DealRepository
 import com.nnomm.security.AuthPrincipal
+import org.springframework.stereotype.Service
 import java.util.UUID
 
+@Service
 class DealService(
     private val db: DatabaseFactory,
     private val dealRepository: DealRepository = DealRepository()

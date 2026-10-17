@@ -1,5 +1,9 @@
 package com.nnomm
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.nnomm.domain.Claim
 import com.nnomm.domain.ClaimRequest
 import com.nnomm.domain.ClaimStatus
 import com.nnomm.domain.CreateDealRequest
@@ -13,7 +17,6 @@ import com.nnomm.security.AuthPrincipal
 import com.nnomm.service.ClaimExpiryWorker
 import com.nnomm.service.ClaimService
 import com.nnomm.service.DealService
-import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -31,7 +34,7 @@ class LifecycleAndExpiryTest {
     private val dealService = DealService(db, dealRepository)
     private val claimService = ClaimService(config, db, dealRepository, claimRepository)
     private val expiryWorker = ClaimExpiryWorker(db)
-    private val json = Json { ignoreUnknownKeys = true }
+    private val objectMapper: ObjectMapper = jacksonObjectMapper().registerModule(JavaTimeModule())
 
     @BeforeEach
     fun setup() {
@@ -49,7 +52,7 @@ class LifecycleAndExpiryTest {
         )
 
         val claimResult = claimService.claimDeal(customer, deal.id, "expiry-key-1", ClaimRequest(2))
-        val claim = json.decodeFromString<com.nnomm.domain.Claim>(claimResult.responseBody)
+        val claim = objectMapper.readValue(claimResult.responseBody, Claim::class.java)
 
         var currentDeal = dealService.getDeal(deal.id)
         assertEquals(3, currentDeal.stock_available, "Stock must decrement to 3")
@@ -74,7 +77,7 @@ class LifecycleAndExpiryTest {
 
         // After expiry, customer is allowed to claim again!
         val secondClaim = claimService.claimDeal(customer, deal.id, "expiry-key-2", ClaimRequest(1))
-        assertEquals(201, secondClaim.statusCode.value)
+        assertEquals(201, secondClaim.statusCode)
     }
 
     @Test
@@ -157,7 +160,7 @@ class LifecycleAndExpiryTest {
         // Replaying same key returns SOLD_OUT
         val replayed = claimService.claimDeal(customer, deal.id, key, ClaimRequest(1))
         assertTrue(replayed.isReplayed)
-        assertEquals(409, replayed.statusCode.value)
+        assertEquals(409, replayed.statusCode)
         assertTrue(replayed.responseBody.contains("SOLD_OUT"))
     }
 }

@@ -1,7 +1,9 @@
 plugins {
+    id("org.springframework.boot") version "3.2.3"
+    id("io.spring.dependency-management") version "1.1.4"
     kotlin("jvm") version "1.9.22"
+    kotlin("plugin.spring") version "1.9.22"
     kotlin("plugin.serialization") version "1.9.22"
-    application
 }
 
 group = "com.nnomm"
@@ -11,47 +13,33 @@ repositories {
     mavenCentral()
 }
 
-val ktorVersion = "2.3.9"
-val logbackVersion = "1.4.14"
-val flywayVersion = "10.8.1"
-val testcontainersVersion = "1.19.7"
-
 dependencies {
-    // Ktor Server
-    implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-server-status-pages-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-server-call-logging-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-server-double-receive-jvm:$ktorVersion")
+    // Spring Boot Starters
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-jdbc")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
     // Database & Migrations
     implementation("org.postgresql:postgresql:42.7.2")
-    implementation("com.zaxxer:HikariCP:5.1.0")
-    implementation("org.flywaydb:flyway-core:$flywayVersion")
-    implementation("org.flywaydb:flyway-database-postgresql:$flywayVersion")
+    implementation("org.flywaydb:flyway-core:10.8.1")
+    implementation("org.flywaydb:flyway-database-postgresql:10.8.1")
 
     // JWT Security
     implementation("com.auth0:java-jwt:4.4.0")
 
-    // Logging
-    implementation("ch.qos.logback:logback-classic:$logbackVersion")
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
 
     // Testing
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
-    testImplementation("io.ktor:ktor-server-test-host-jvm:$ktorVersion")
-    testImplementation("io.ktor:ktor-client-content-negotiation-jvm:$ktorVersion")
+    testImplementation(kotlin("test"))
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
-    testImplementation("org.testcontainers:testcontainers:$testcontainersVersion")
-    testImplementation("org.testcontainers:postgresql:$testcontainersVersion")
-    testImplementation("org.testcontainers:junit-jupiter:$testcontainersVersion")
+    testImplementation("org.testcontainers:testcontainers:1.19.7")
+    testImplementation("org.testcontainers:postgresql:1.19.7")
+    testImplementation("org.testcontainers:junit-jupiter:1.19.7")
     testImplementation("io.zonky.test:embedded-postgres:2.0.7")
-}
-
-application {
-    mainClass.set("com.nnomm.ApplicationKt")
 }
 
 java {
@@ -62,7 +50,7 @@ java {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
         jvmTarget = "17"
-        freeCompilerArgs = listOf("-opt-in=kotlin.time.ExperimentalTime")
+        freeCompilerArgs = listOf("-Xjsr305=strict")
     }
 }
 
@@ -75,7 +63,7 @@ tasks.test {
 
 tasks.register<JavaExec>("devRun") {
     group = "application"
-    description = "Runs the development server on http://localhost:8080 with embedded PostgreSQL"
-    classpath = sourceSets["test"].runtimeClasspath
+    description = "Runs the application with an embedded PostgreSQL database for zero-config local development."
     mainClass.set("com.nnomm.DevServerKt")
+    classpath = sourceSets["test"].runtimeClasspath
 }

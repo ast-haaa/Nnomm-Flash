@@ -15,12 +15,13 @@ import com.nnomm.service.ClaimExpiryWorker
 import com.nnomm.service.ClaimService
 import com.nnomm.service.DealService
 import com.nnomm.service.PaymentWebhookService
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.Instant
@@ -41,7 +42,7 @@ class ConcurrencyTest {
     private val dealService = DealService(db, dealRepository)
     private val claimService = ClaimService(config, db, dealRepository, claimRepository)
     private val webhookService = PaymentWebhookService(hmacService, db, claimRepository, dealRepository)
-    private val json = Json { ignoreUnknownKeys = true }
+    private val objectMapper: ObjectMapper = jacksonObjectMapper().registerModule(JavaTimeModule())
 
     @BeforeEach
     fun setup() {
@@ -94,7 +95,7 @@ class ConcurrencyTest {
                         idempotencyKey = idempotencyKey,
                         request = ClaimRequest(quantity = 1)
                     )
-                    if (result.statusCode.value == 201) {
+                    if (result.statusCode == 201) {
                         successCount.incrementAndGet()
                     } else {
                         otherCount.incrementAndGet()
@@ -146,7 +147,7 @@ class ConcurrencyTest {
                         idempotencyKey = key,
                         request = ClaimRequest(quantity = 2)
                     )
-                    if (result.statusCode.value == 201) {
+                    if (result.statusCode == 201) {
                         if (result.isReplayed) {
                             replayedCount.incrementAndGet()
                         } else {
@@ -208,7 +209,7 @@ class ConcurrencyTest {
                         idempotencyKey = key,
                         request = ClaimRequest(quantity = 1)
                     )
-                    if (result.statusCode.value == 201) {
+                    if (result.statusCode == 201) {
                         successCount.incrementAndGet()
                     }
                 } catch (e: com.nnomm.domain.AlreadyClaimedException) {
@@ -250,7 +251,7 @@ class ConcurrencyTest {
             idempotencyKey = "race-test-key",
             request = ClaimRequest(quantity = 2)
         )
-        val claim = json.decodeFromString<com.nnomm.domain.Claim>(claimResult.responseBody)
+        val claim = objectMapper.readValue(claimResult.responseBody, com.nnomm.domain.Claim::class.java)
 
         // Artificially age the claim so it is due for expiry
         db.withConnection { conn ->
@@ -268,7 +269,7 @@ class ConcurrencyTest {
             amount_paise = claim.amount_paise,
             occurred_at = Instant.now()
         )
-        val rawBody = json.encodeToString(paymentPayload).toByteArray(Charsets.UTF_8)
+        val rawBody = objectMapper.writeValueAsString(paymentPayload).toByteArray(Charsets.UTF_8)
         val timestamp = Instant.now().epochSecond
         val signature = hmacService.computeSignature(timestamp, rawBody)
 

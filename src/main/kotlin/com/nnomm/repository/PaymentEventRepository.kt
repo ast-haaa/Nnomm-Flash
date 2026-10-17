@@ -1,10 +1,12 @@
 package com.nnomm.repository
 
+import org.springframework.stereotype.Repository
 import java.sql.Connection
 import java.sql.Timestamp
 import java.time.Instant
 import java.util.UUID
 
+@Repository
 class PaymentEventRepository {
 
     fun isEventProcessed(conn: Connection, eventId: String): Boolean {

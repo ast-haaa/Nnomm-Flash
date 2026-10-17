@@ -2,13 +2,21 @@ package com.nnomm.security
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.nnomm.config.AppConfig
 import com.nnomm.domain.AppException
 import com.nnomm.domain.UnauthenticatedException
 import com.nnomm.domain.UserRole
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 import java.util.Date
 import java.util.UUID
 
+@Component
 class JwtService(private val secret: String) {
+
+    @Autowired
+    constructor(config: AppConfig) : this(config.jwtSecret)
+
     private val algorithm = Algorithm.HMAC256(secret)
     private val verifier = JWT.require(algorithm).build()
 

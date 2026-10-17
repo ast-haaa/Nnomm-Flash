@@ -1,5 +1,6 @@
 package com.nnomm.repository
 
+import org.springframework.stereotype.Repository
 import java.sql.Connection
 import java.sql.ResultSet
 import java.sql.Timestamp
@@ -17,6 +18,7 @@ data class IdempotencyRecord(
     val lockedUntil: Instant
 )
 
+@Repository
 class IdempotencyRepository {
 
     fun findForUpdate(conn: Connection, customerId: UUID, key: String): IdempotencyRecord? {

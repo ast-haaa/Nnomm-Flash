@@ -1,5 +1,8 @@
 package com.nnomm.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nnomm.config.AppConfig
 import com.nnomm.database.DatabaseFactory
 import com.nnomm.domain.AlreadyClaimedException
@@ -22,26 +25,25 @@ import com.nnomm.repository.ClaimRepository
 import com.nnomm.repository.DealRepository
 import com.nnomm.repository.IdempotencyRepository
 import com.nnomm.security.AuthPrincipal
-import io.ktor.http.HttpStatusCode
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import org.postgresql.util.PSQLException
+import org.springframework.stereotype.Service
 import java.time.Instant
 import java.util.UUID
 
 data class ClaimExecutionResult(
-    val statusCode: HttpStatusCode,
+    val statusCode: Int,
     val responseBody: String,
     val isReplayed: Boolean
 )
 
+@Service
 class ClaimService(
     private val config: AppConfig,
     private val db: DatabaseFactory,
     private val dealRepository: DealRepository = DealRepository(),
     private val claimRepository: ClaimRepository = ClaimRepository(),
     private val idempotencyRepository: IdempotencyRepository = IdempotencyRepository(),
-    private val json: Json = Json { ignoreUnknownKeys = true }
+    private val objectMapper: ObjectMapper = jacksonObjectMapper().registerModule(JavaTimeModule())
 ) {
 
     private val idempotencyKeyRegex = Regex("^[A-Za-z0-9-_]{1,64}$")
@@ -103,7 +105,7 @@ class ClaimService(
         // If existing record was completed, replay it immediately
         if (record != null && record.statusCode != null && record.responseBody != null) {
             return ClaimExecutionResult(
-                statusCode = HttpStatusCode.fromValue(record.statusCode),
+                statusCode = record.statusCode,
                 responseBody = record.responseBody,
                 isReplayed = true
             )
@@ -112,7 +114,7 @@ class ClaimService(
         // 5. Execute Claim Logic
         try {
             val result = executeClaimTransaction(customerId, dealId, request.quantity)
-            val jsonResponse = json.encodeToString(result)
+            val jsonResponse = objectMapper.writeValueAsString(result)
 
             // Save successful outcome (201) in idempotency table
             db.withTransaction { conn ->
@@ -120,13 +122,13 @@ class ClaimService(
                     conn,
                     customerId,
                     idempotencyKey,
-                    HttpStatusCode.Created.value,
+                    201,
                     jsonResponse
                 )
             }
 
             return ClaimExecutionResult(
-                statusCode = HttpStatusCode.Created,
+                statusCode = 201,
                 responseBody = jsonResponse,
                 isReplayed = false
             )
@@ -134,14 +136,14 @@ class ClaimService(
             // Handle conflicts that must be stored for idempotency: SOLD_OUT, ALREADY_CLAIMED, DEAL_NOT_LIVE
             if (e is SoldOutException || e is AlreadyClaimedException || e is DealNotLiveException) {
                 val errorResponse = ErrorResponse(ErrorDetail(code = e.code, message = e.message))
-                val jsonResponse = json.encodeToString(errorResponse)
+                val jsonResponse = objectMapper.writeValueAsString(errorResponse)
                 try {
                     db.withTransaction { conn ->
                         idempotencyRepository.saveResult(
                             conn,
                             customerId,
                             idempotencyKey,
-                            e.statusCode.value,
+                            e.statusCode,
                             jsonResponse
                         )
                     }

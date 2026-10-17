@@ -1,12 +1,19 @@
 package com.nnomm.security
 
+import com.nnomm.config.AppConfig
 import com.nnomm.domain.UnauthenticatedException
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 import java.security.MessageDigest
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import kotlin.math.abs
 
+@Component
 class HmacService(private val webhookSecret: String) {
+
+    @Autowired
+    constructor(config: AppConfig) : this(config.webhookSecret)
 
     fun verifySignature(header: String?, rawBody: ByteArray, currentEpochSeconds: Long = System.currentTimeMillis() / 1000) {
         if (header.isNullOrBlank()) {

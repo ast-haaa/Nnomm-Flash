@@ -1,12 +1,14 @@
 package com.nnomm.repository
 
 import com.nnomm.domain.Deal
+import org.springframework.stereotype.Repository
 import java.sql.Connection
 import java.sql.ResultSet
 import java.sql.Timestamp
 import java.time.Instant
 import java.util.UUID
 
+@Repository
 class DealRepository {
 
     fun create(conn: Connection, deal: Deal): Deal {

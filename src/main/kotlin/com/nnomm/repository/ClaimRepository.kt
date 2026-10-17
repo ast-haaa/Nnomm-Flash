@@ -2,6 +2,7 @@ package com.nnomm.repository
 
 import com.nnomm.domain.Claim
 import com.nnomm.domain.ClaimStatus
+import org.springframework.stereotype.Repository
 import java.sql.Connection
 import java.sql.ResultSet
 import java.sql.Timestamp
@@ -13,6 +14,7 @@ data class ExpiredDealStock(
     val units: Int
 )
 
+@Repository
 class ClaimRepository {
 
     fun create(conn: Connection, claim: Claim): Claim {

@@ -1,4 +1,4 @@
-# Stage 1: Build application distribution
+# Stage 1: Build Spring Boot jar
 FROM eclipse-temurin:17-jdk-alpine AS builder
 
 WORKDIR /app
@@ -16,10 +16,10 @@ RUN ./gradlew --no-daemon dependencies || true
 # Copy source code and resources
 COPY src/ ./src/
 
-# Build application distribution
-RUN ./gradlew --no-daemon installDist -x test
+# Build production Spring Boot jar
+RUN ./gradlew --no-daemon bootJar -x test
 
-# Stage 2: Runtime image
+# Stage 2: Minimal Runtime image
 FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
@@ -27,11 +27,11 @@ WORKDIR /app
 # Create a non-root user for security
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-# Copy application distribution from builder
-COPY --from=builder --chown=appuser:appgroup /app/build/install/nnomm-claim-service/ ./
+# Copy Spring Boot runnable jar from builder
+COPY --from=builder --chown=appuser:appgroup /app/build/libs/*.jar app.jar
 
 USER appuser
 
 EXPOSE 8080 8081
 
-ENTRYPOINT ["bin/nnomm-claim-service"]
+ENTRYPOINT ["java", "-jar", "app.jar"]

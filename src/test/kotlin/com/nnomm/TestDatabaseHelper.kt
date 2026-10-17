@@ -10,7 +10,6 @@ import java.sql.Connection
 
 object TestDatabaseHelper {
     private val log = LoggerFactory.getLogger(TestDatabaseHelper::class.java)
-
     private var pgContainer: PostgreSQLContainer<*>? = null
     private var embeddedPg: EmbeddedPostgres? = null
 
@@ -31,20 +30,29 @@ object TestDatabaseHelper {
             return AppConfig.fromEnv()
         }
 
-        val dockerAvailable = try {
-            DockerClientFactory.instance().isDockerAvailable
-        } catch (_: Throwable) {
-            false
-        }
+        val useTestcontainers = System.getenv("USE_TESTCONTAINERS")?.equals("true", ignoreCase = true) == true
+        val dockerAvailable = if (useTestcontainers) {
+            try {
+                DockerClientFactory.instance().isDockerAvailable
+            } catch (_: Throwable) {
+                false
+            }
+        } else false
 
         if (dockerAvailable) {
-            log.info("Docker is available, starting Testcontainers PostgreSQL 15...")
+            log.info("USE_TESTCONTAINERS is enabled. Starting Testcontainers PostgreSQL 15 container...")
             val container = PostgreSQLContainer("postgres:15-alpine")
                 .withDatabaseName("nnomm_test")
                 .withUsername("postgres")
                 .withPassword("postgres")
             container.start()
             pgContainer = container
+
+            Runtime.getRuntime().addShutdownHook(Thread {
+                try {
+                    container.stop()
+                } catch (_: Exception) {}
+            })
 
             return AppConfig(
                 port = 8080,
@@ -57,9 +65,15 @@ object TestDatabaseHelper {
             )
         }
 
-        log.info("Docker not detected, starting Embedded real PostgreSQL 15 engine...")
+        log.info("Docker not detected. Starting Embedded PostgreSQL 15 engine...")
         val pg = EmbeddedPostgres.builder().start()
         embeddedPg = pg
+
+        Runtime.getRuntime().addShutdownHook(Thread {
+            try {
+                pg.close()
+            } catch (_: Exception) {}
+        })
 
         return AppConfig(
             port = 8080,

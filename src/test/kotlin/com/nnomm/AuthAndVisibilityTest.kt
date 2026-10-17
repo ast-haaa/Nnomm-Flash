@@ -2,6 +2,10 @@ package com.nnomm
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.nnomm.domain.Claim
 import com.nnomm.domain.ClaimRequest
 import com.nnomm.domain.CreateDealRequest
 import com.nnomm.domain.ForbiddenException
@@ -14,7 +18,6 @@ import com.nnomm.security.AuthPrincipal
 import com.nnomm.security.JwtService
 import com.nnomm.service.ClaimService
 import com.nnomm.service.DealService
-import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -33,7 +36,7 @@ class AuthAndVisibilityTest {
     private val jwtService = JwtService(config.jwtSecret)
     private val dealService = DealService(db, dealRepository)
     private val claimService = ClaimService(config, db, dealRepository, claimRepository)
-    private val json = Json { ignoreUnknownKeys = true }
+    private val objectMapper: ObjectMapper = jacksonObjectMapper().registerModule(JavaTimeModule())
 
     @BeforeEach
     fun setup() {
@@ -64,7 +67,7 @@ class AuthAndVisibilityTest {
 
         // Customer A claims
         val claimResult = claimService.claimDeal(customerA, deal.id, "claim-key-vis", ClaimRequest(quantity = 1))
-        val claim = json.decodeFromString<com.nnomm.domain.Claim>(claimResult.responseBody)
+        val claim = objectMapper.readValue(claimResult.responseBody, Claim::class.java)
 
         // 1. Customer A can read their own claim -> 200
         val fetchedByCustomerA = claimService.getClaim(customerA, claim.id)

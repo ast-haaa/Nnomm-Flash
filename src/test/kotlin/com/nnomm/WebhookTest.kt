@@ -1,5 +1,9 @@
 package com.nnomm
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.nnomm.domain.Claim
 import com.nnomm.domain.ClaimRequest
 import com.nnomm.domain.ClaimStatus
 import com.nnomm.domain.CreateDealRequest
@@ -13,8 +17,6 @@ import com.nnomm.security.HmacService
 import com.nnomm.service.ClaimService
 import com.nnomm.service.DealService
 import com.nnomm.service.PaymentWebhookService
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -32,7 +34,7 @@ class WebhookTest {
     private val dealService = DealService(db, dealRepository)
     private val claimService = ClaimService(config, db, dealRepository, claimRepository)
     private val webhookService = PaymentWebhookService(hmacService, db, claimRepository, dealRepository)
-    private val json = Json { ignoreUnknownKeys = true }
+    private val objectMapper: ObjectMapper = jacksonObjectMapper().registerModule(JavaTimeModule())
 
     @BeforeEach
     fun setup() {
@@ -47,7 +49,7 @@ class WebhookTest {
         )
         val customerPrincipal = AuthPrincipal(UUID.randomUUID(), UserRole.customer, null)
         val claimResult = claimService.claimDeal(customerPrincipal, deal.id, "key-1", ClaimRequest(quantity))
-        val claim = json.decodeFromString<com.nnomm.domain.Claim>(claimResult.responseBody)
+        val claim = objectMapper.readValue(claimResult.responseBody, Claim::class.java)
         return deal.id to claim.id
     }
 
@@ -55,7 +57,7 @@ class WebhookTest {
     fun testBadSignatureRejected() {
         val (_, claimId) = setupDealAndClaim()
         val payload = WebhookPayload("evt-1", "payment.succeeded", claimId, 5000, Instant.now())
-        val rawBody = json.encodeToString(payload).toByteArray()
+        val rawBody = objectMapper.writeValueAsString(payload).toByteArray(Charsets.UTF_8)
 
         // Missing signature
         assertThrows<UnauthenticatedException> {
@@ -79,7 +81,7 @@ class WebhookTest {
     fun testStaleTimestampRejected() {
         val (_, claimId) = setupDealAndClaim()
         val payload = WebhookPayload("evt-2", "payment.succeeded", claimId, 5000, Instant.now())
-        val rawBody = json.encodeToString(payload).toByteArray()
+        val rawBody = objectMapper.writeValueAsString(payload).toByteArray(Charsets.UTF_8)
 
         // 301 seconds in the past
         val staleTimestamp = Instant.now().epochSecond - 301
@@ -100,7 +102,7 @@ class WebhookTest {
     fun testDuplicateEventsAreIdempotent() {
         val (_, claimId) = setupDealAndClaim()
         val payload = WebhookPayload("evt-dup", "payment.succeeded", claimId, 5000, Instant.now())
-        val rawBody = json.encodeToString(payload).toByteArray()
+        val rawBody = objectMapper.writeValueAsString(payload).toByteArray(Charsets.UTF_8)
         val signature = hmacService.computeSignature(Instant.now().epochSecond, rawBody)
 
         // First delivery: processes payment -> PAID
@@ -123,7 +125,7 @@ class WebhookTest {
         val (_, claimId) = setupDealAndClaim()
         // Expected amount: 5000, Paid amount: 4000
         val payload = WebhookPayload("evt-mismatch", "payment.succeeded", claimId, 4000, Instant.now())
-        val rawBody = json.encodeToString(payload).toByteArray()
+        val rawBody = objectMapper.writeValueAsString(payload).toByteArray(Charsets.UTF_8)
         val signature = hmacService.computeSignature(Instant.now().epochSecond, rawBody)
 
         webhookService.processWebhook(signature, rawBody)
@@ -136,7 +138,7 @@ class WebhookTest {
     fun testPaymentFailedDoesNotChangeStatus() {
         val (_, claimId) = setupDealAndClaim()
         val payload = WebhookPayload("evt-fail", "payment.failed", claimId, 5000, Instant.now())
-        val rawBody = json.encodeToString(payload).toByteArray()
+        val rawBody = objectMapper.writeValueAsString(payload).toByteArray(Charsets.UTF_8)
         val signature = hmacService.computeSignature(Instant.now().epochSecond, rawBody)
 
         webhookService.processWebhook(signature, rawBody)
