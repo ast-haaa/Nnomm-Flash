@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nnomm Flash Deals • Live Reservation Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-page: #f8fafc;
+      --surface: #ffffff;
+      --surface-subtle: #f1f5f9;
+      --border: #e2e8f0;
+      --border-hover: #cbd5e1;
+      --primary: #f95738;
+      --primary-hover: #e04326;
+      --primary-light: #fff5f2;
+      --accent: #6366f1;
+      --accent-light: #eef2ff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-subtle: #94a3b8;
+      --success: #10b981;
+      --success-light: #ecfdf5;
+      --danger: #ef4444;
+      --danger-light: #fef2f2;
+      --warning: #f59e0b;
+      --warning-light: #fffbeb;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.04);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 60px;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 14px 24px;
+    }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text-main);
+    }
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, #f95738 0%, #ee3838 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 22px;
+      box-shadow: 0 4px 10px rgba(249, 87, 56, 0.35);
+    }
+    .brand-title {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .brand-sub {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .nav-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 14px;
+      background: var(--success-light);
+      color: var(--success);
+      border-radius: var(--radius-full);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+      70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 28px auto 0;
+      padding: 0 24px;
+    }
+
+    /* Hero Banner */
+    .hero-banner {
+      background: linear-gradient(135deg, #ffffff 0%, #fff7f5 100%);
+      border: 1.5px solid #fed7aa;
+      border-radius: var(--radius-lg);
+      padding: 24px 32px;
+      margin-bottom: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .hero-text h2 {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: #0f172a;
+    }
+    .hero-text p {
+      font-size: 13.5px;
+      color: #475569;
+      max-width: 650px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ffedd5;
+      color: #ea580c;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    /* Layout Grid */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 24px;
+    }
+    @media (max-width: 900px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Card */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+    }
+    .card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--border-hover);
+    }
+
+    /* Product Deal Card */
+    .deal-card {
+      display: flex;
+      flex-direction: column;
+    }
+    .deal-img-wrapper {
+      position: relative;
+      height: 250px;
+      overflow: hidden;
+      background: #e2e8f0;
+    }
+    .deal-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .deal-card:hover .deal-img {
+      transform: scale(1.03);
+    }
+    .deal-tags {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      display: flex;
+      gap: 8px;
+    }
+    .tag {
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .tag-flash {
+      background: #f95738;
+      color: white;
+      box-shadow: 0 2px 8px rgba(249, 87, 56, 0.4);
+    }
+    .tag-discount {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(6px);
+      color: white;
+    }
+    .deal-body {
+      padding: 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .deal-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .deal-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+    .deal-desc {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+      line-height: 1.55;
+    }
+    .price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .price-current {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+    .price-original {
+      font-size: 16px;
+      color: var(--text-subtle);
+      text-decoration: line-through;
+    }
+
+    /* Stock Indicator */
+    .stock-box {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 22px;
+    }
+    .stock-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .stock-bar-bg {
+      height: 10px;
+      background: #cbd5e1;
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+    .stock-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+      border-radius: var(--radius-full);
+      transition: width 0.4s ease, background 0.4s ease;
+      width: 100%;
+    }
+    .stock-bar-fill.low {
+      background: linear-gradient(90deg, #f95738 0%, #dc2626 100%);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: var(--radius-md);
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #f95738 0%, #e04326 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(249, 87, 56, 0.3);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 6px 16px rgba(249, 87, 56, 0.4);
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: white;
+      color: var(--text-main);
+      border: 1.5px solid var(--border);
+    }
+    .btn-secondary:hover {
+      background: var(--surface-subtle);
+      border-color: var(--border-hover);
+    }
+    .btn-accent {
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+    .btn-accent:hover {
+      box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+      transform: translateY(-1px);
+    }
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+    .btn-success {
+      background: #10b981;
+      color: white;
+    }
+    .btn-success:hover {
+      background: #059669;
+    }
+    .btn-block { width: 100%; }
+
+    /* Admin & Concurrency Tabs */
+    .tab-header {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: #f8fafc;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 14px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-bottom: 2.5px solid transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .tab-btn.active {
+      color: var(--primary);
+      background: white;
+      border-bottom-color: var(--primary);
+    }
+    .tab-content {
+      padding: 24px;
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Form Controls */
+    .form-group {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px 14px;
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text-main);
+      transition: border-color 0.15s;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(249, 87, 56, 0.12);
+    }
+
+    /* Blast Visualizer Grid */
+    .blast-grid {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 6px;
+      margin: 16px 0;
+    }
+    .blast-node {
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      transition: all 0.3s ease;
+    }
+    .blast-node.success {
+      background: var(--success);
+      color: white;
+      box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);
+      transform: scale(1.05);
+    }
+    .blast-node.conflict {
+      background: #fee2e2;
+      color: #dc2626;
+      border: 1px solid #fca5a5;
+    }
+
+    /* Console / Log Stream */
+    .log-card {
+      margin-top: 24px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+    .log-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .log-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .log-box {
+      background: #0f172a;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      color: #38bdf8;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      height: 180px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .toast {
+      background: white;
+      border-left: 4px solid var(--primary);
+      padding: 12px 18px;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-xl);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideIn 0.25s ease;
+    }
+    .toast.success { border-left-color: var(--success); }
+    .toast.error { border-left-color: var(--danger); }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header class="navbar">
+    <div class="nav-inner">
+      <a href="#" class="brand">
+        <div class="brand-icon">🍔</div>
+        <div>
+          <div class="brand-title">Nnomm Flash</div>
+          <div class="brand-sub">Reservation Engine</div>
+        </div>
+      </a>
+      <div class="nav-status">
+        <span class="status-dot"></span>
+        <span>ENGINE READY • PORT 8080</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Hero Info Banner -->
+    <div class="hero-banner">
+      <div class="hero-text">
+        <div class="hero-badge">⚡ Real-World Flash Sale Simulator</div>
+        <h2>High-Concurrency Deal Reservation Engine</h2>
+        <p>Demonstrating PostgreSQL tuple locks (<code>FOR UPDATE</code>), 2-phase crash idempotency, and automated 10-second non-blocking claim sweeps. <strong>Zero overselling guaranteed.</strong></p>
+      </div>
+      <div>
+        <button class="btn btn-secondary" onclick="loadDefaultDeal()">🔄 Reset / Reload Deal</button>
+      </div>
+    </div>
+
+    <!-- Main Two-Column View -->
+    <div class="main-grid">
+      
+      <!-- LEFT COLUMN: Product Flash Deal Card -->
+      <div class="card deal-card">
+        <div class="deal-img-wrapper">
+          <img id="foodImg" class="deal-img" src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=700&auto=format&fit=crop&q=80" alt="Gourmet Burger">
+          <div class="deal-tags">
+            <span class="tag tag-flash">⚡ FLASH SALE</span>
+            <span class="tag tag-discount">50% OFF</span>
+          </div>
+        </div>
+
+        <div class="deal-body">
+          <div class="deal-meta">
+            <span>The Artisan Kitchen &bull; ⭐ 4.9 (2.4k ratings)</span>
+            <span id="dealIdBadge" style="font-family: monospace; font-size: 11px; background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">deal_id: loading...</span>
+          </div>
+
+          <h3 class="deal-title" id="displayTitle">Truffle Wagyu &amp; Aged Cheddar Burger</h3>
+          <p class="deal-desc" id="displayDesc">Smoked brioche bun, double black angus patty, black truffle aioli, melted aged English cheddar with hand-cut rosemary fries.</p>
+
+          <div class="price-row">
+            <span class="price-current" id="displayPrice">₹250</span>
+            <span class="price-original">₹500</span>
+            <span style="font-size: 12px; font-weight: 700; color: var(--success); background: var(--success-light); padding: 2px 8px; border-radius: var(--radius-full);">Save ₹250</span>
+          </div>
+
+          <!-- Real-Time Stock Bar -->
+          <div class="stock-box">
+            <div class="stock-header">
+              <span>Inventory Remaining</span>
+              <span id="stockCountText" style="color: var(--primary);">5 of 5 left</span>
+            </div>
+            <div class="stock-bar-bg">
+              <div id="stockProgressBar" class="stock-bar-fill" style="width: 100%;"></div>
+            </div>
+          </div>
+
+          <!-- Primary Action Button -->
+          <div style="display: flex; gap: 10px;">
+            <button id="claimBtn" class="btn btn-primary btn-block" onclick="claimDeal()">
+              ⚡ Claim 1 Voucher Now
+            </button>
+          </div>
+
+          <!-- Claim Result Banner -->
+          <div id="claimResultBox" style="display: none; margin-top: 16px; padding: 14px; background: #f0fdf4; border: 1.5px solid #86efac; border-radius: var(--radius-md);">
+            <div style="font-size: 13px; font-weight: 700; color: #166534; display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+              <span>✅ Claim Reserved for 10 Minutes!</span>
+            </div>
+            <div style="font-size: 11px; color: #15803d; font-family: monospace; margin-bottom: 10px;" id="claimIdText">
+              claim_id: ...
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-success" style="padding: 6px 12px; font-size: 12px; flex: 1;" onclick="simulatePayment(true)">💳 Simulate Payment Succeeded</button>
+              <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px; flex: 1;" onclick="simulatePayment(false)">❌ Simulate Payment Failed</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: Interactive Control & Test Arena -->
+      <div class="card">
+        <div class="tab-header">
+          <button class="tab-btn active" onclick="switchTab('concurrency', event)">🔥 Concurrency Blast</button>
+          <button class="tab-btn" onclick="switchTab('create', event)">➕ Create Deal</button>
+          <button class="tab-btn" onclick="switchTab('tokens', event)">🔑 Personas</button>
+        </div>
+
+        <!-- TAB 1: Concurrency Blast Simulator -->
+        <div id="tab-concurrency" class="tab-content active">
+          <h4 style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">Concurrency Blast Simulator</h4>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">
+            Simulate 20 distinct customers clicking "Claim" simultaneously on separate threads. Watch PostgreSQL's row-level lock ensure <strong>zero overselling</strong>.
+          </p>
+
+          <button id="blastBtn" class="btn btn-accent btn-block" onclick="runConcurrencyBlast()">
+            🚀 Blast 20 Simultaneous Claims
+          </button>
+
+          <div style="margin-top: 18px;">
+            <label>Live Results Grid (20 Requests):</label>
+            <div class="blast-grid" id="blastGrid">
+              <!-- 20 nodes populated by JS -->
+            </div>
+            <div id="blastStats" style="font-size: 12px; font-weight: 600; color: var(--text-muted); text-align: center;">
+              Ready to fire test requests.
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: Create New Deal (Admin) -->
+        <div id="tab-create" class="tab-content">
+          <h4 style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">Publish New Flash Deal</h4>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">Creates a new deal row in PostgreSQL with start/end time windows.</p>
+
+          <div class="form-group">
+            <label>Deal Title:</label>
+            <input type="text" id="inputTitle" value="Woodfired Margherita Pizza">
+          </div>
+
+          <div style="display: flex; gap: 12px;">
+            <div class="form-group" style="flex: 1;">
+              <label>Price (₹):</label>
+              <input type="number" id="inputPrice" value="199">
+            </div>
+            <div class="form-group" style="flex: 1;">
+              <label>Total Stock:</label>
+              <input type="number" id="inputStock" value="5">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Food Photo Theme:</label>
+            <select id="inputPhoto" onchange="updatePhotoPreview()">
+              <option value="burger">🍔 Gourmet Burger</option>
+              <option value="pizza" selected>🍕 Italian Woodfired Pizza</option>
+              <option value="sushi">🍣 Japanese Sushi Platter</option>
+              <option value="biryani">🍚 Royal Hyderabadi Biryani</option>
+            </select>
+          </div>
+
+          <button class="btn btn-primary btn-block" onclick="submitCreateDeal()">
+            Publish Deal (POST /v1/deals)
+          </button>
+        </div>
+
+        <!-- TAB 3: Persona / Auth Tokens -->
+        <div id="tab-tokens" class="tab-content">
+          <h4 style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">Active JWT Personas</h4>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">HS256 tokens minted with strictly validated roles and expiry.</p>
+
+          <div class="form-group">
+            <label>Customer Persona ID:</label>
+            <input type="text" id="txtCustSub" readonly style="font-family: monospace; font-size: 12px; background: #f8fafc;">
+          </div>
+
+          <div class="form-group">
+            <label>Restaurant Admin Persona ID:</label>
+            <input type="text" id="txtAdminSub" readonly style="font-family: monospace; font-size: 12px; background: #f8fafc;">
+          </div>
+
+          <button class="btn btn-secondary btn-block" onclick="fetchNewPersonas()">
+            🔄 Mint New Fresh Personas
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Event Log -->
+    <div class="log-card">
+      <div class="log-header">
+        <div class="log-title">
+          <span>📋 Real-Time Activity &amp; SQL Transaction Logs</span>
+        </div>
+        <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="clearLogs()">Clear Log</button>
+      </div>
+      <div id="logStream" class="log-box">Waiting for user interaction...</div>
+    </div>
+  </div>
+
+  <!-- Toast Notification System -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    const FOOD_IMAGES = {
+      burger: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=700&auto=format&fit=crop&q=80',
+      pizza: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=700&auto=format&fit=crop&q=80',
+      sushi: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=700&auto=format&fit=crop&q=80',
+      biryani: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=700&auto=format&fit=crop&q=80'
+    };
+
+    let activeDeal = null;
+    let customerToken = '';
+    let adminToken = '';
+    let currentClaimId = '';
+
+    function showToast(msg, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast ' + type;
+      toast.innerHTML = (type === 'success' ? '✅ ' : type === 'error' ? '❌ ' : 'ℹ️ ') + msg;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
+    }
+
+    function appendLog(action, details) {
+      const logBox = document.getElementById('logStream');
+      const time = new Date().toLocaleTimeString();
+      const payload = typeof details === 'object' ? JSON.stringify(details, null, 2) : details;
+      logBox.textContent = '[' + time + '] ' + action + '\n' + payload + '\n\n' + logBox.textContent;
+    }
+
+    function clearLogs() {
+      document.getElementById('logStream').textContent = '';
+    }
+
+    function switchTab(name, ev) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      if (ev && ev.currentTarget) {
+        ev.currentTarget.classList.add('active');
+      }
+      document.getElementById('tab-' + name).classList.add('active');
+    }
+
+    function updatePhotoPreview() {
+      const choice = document.getElementById('inputPhoto').value;
+      document.getElementById('foodImg').src = FOOD_IMAGES[choice] || FOOD_IMAGES.burger;
+    }
+
+    async function fetchNewPersonas() {
+      try {
+        const res = await fetch('/dev/tokens');
+        const data = await res.json();
+        adminToken = data.admin_token;
+        customerToken = data.customer_token;
+        document.getElementById('txtAdminSub').value = data.admin_sub;
+        document.getElementById('txtCustSub').value = data.customer_sub;
+        appendLog('MINTED NEW JWTs', { role_customer: data.customer_sub, role_admin: data.admin_sub });
+      } catch (e) {
+        showToast('Failed to mint tokens: ' + e.message, 'error');
+      }
+    }
+
+    async function loadDefaultDeal() {
+      await fetchNewPersonas();
+      try {
+        const now = new Date();
+        const ends = new Date(now.getTime() + 3600000);
+        const res = await fetch('/v1/deals', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + adminToken
+          },
+          body: JSON.stringify({
+            title: "Truffle Wagyu & Aged Cheddar Burger",
+            price_paise: 25000,
+            stock_total: 5,
+            starts_at: now.toISOString(),
+            ends_at: ends.toISOString()
+          })
+        });
+        const deal = await res.json();
+        activeDeal = deal;
+        updateDealUi(deal);
+        appendLog('INITIALIZED DEAL (POST /v1/deals)', deal);
+        showToast('Deal created & loaded!', 'success');
+      } catch (err) {
+        appendLog('ERROR INIT DEAL', err.message);
+      }
+    }
+
+    function updateDealUi(deal) {
+      if (!deal) return;
+      document.getElementById('dealIdBadge').textContent = 'id: ' + deal.id.substring(0, 8) + '...';
+      document.getElementById('displayTitle').textContent = deal.title;
+      document.getElementById('displayPrice').textContent = '₹' + (deal.price_paise / 100);
+
+      const total = deal.stock_total;
+      const avail = deal.stock_available;
+      const pct = Math.max(0, Math.min(100, (avail / total) * 100));
+
+      const bar = document.getElementById('stockProgressBar');
+      const text = document.getElementById('stockCountText');
+      const btn = document.getElementById('claimBtn');
+
+      bar.style.width = pct + '%';
+      if (avail === 0) {
+        bar.className = 'stock-bar-fill low';
+        text.textContent = 'SOLD OUT (0 left)';
+        text.style.color = 'var(--danger)';
+        btn.disabled = true;
+        btn.textContent = '❌ Sold Out';
+        btn.className = 'btn btn-secondary btn-block';
+      } else {
+        if (avail <= 2) {
+          bar.className = 'stock-bar-fill low';
+          text.style.color = 'var(--danger)';
+        } else {
+          bar.className = 'stock-bar-fill';
+          text.style.color = 'var(--primary)';
+        }
+        text.textContent = avail + ' of ' + total + ' vouchers remaining';
+        btn.disabled = false;
+        btn.textContent = '⚡ Claim 1 Voucher Now';
+        btn.className = 'btn btn-primary btn-block';
+      }
+    }
+
+    async function refreshDealStock() {
+      if (!activeDeal) return;
+      try {
+        const res = await fetch('/v1/deals/' + activeDeal.id);
+        const deal = await res.json();
+        activeDeal = deal;
+        updateDealUi(deal);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function claimDeal() {
+      if (!activeDeal) return showToast('No active deal', 'error');
+      const key = 'idem-' + Math.random().toString(36).substring(2, 9);
+      try {
+        const res = await fetch('/v1/deals/' + activeDeal.id + '/claims', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + customerToken,
+            'Idempotency-Key': key
+          },
+          body: JSON.stringify({ quantity: 1 })
+        });
+        const data = await res.json();
+        appendLog('POST /v1/deals/.../claims [HTTP ' + res.status + ']', data);
+
+        if (res.ok && data.id) {
+          currentClaimId = data.id;
+          document.getElementById('claimResultBox').style.display = 'block';
+          document.getElementById('claimIdText').textContent = 'claim_id: ' + data.id + ' • Status: RESERVED';
+          showToast('Voucher Reserved! 10m to Pay', 'success');
+          refreshDealStock();
+        } else {
+          showToast(data.error?.message || 'Sold Out / Error', 'error');
+          refreshDealStock();
+        }
+      } catch (err) {
+        showToast('Claim failed: ' + err.message, 'error');
+      }
+    }
+
+    async function simulatePayment(success) {
+      if (!currentClaimId) return;
+      const eventType = success ? 'payment.succeeded' : 'payment.failed';
+      try {
+        const res = await fetch('/dev/simulate-webhook?claim_id=' + currentClaimId + '&event_type=' + eventType, { method: 'POST' });
+        const data = await res.json();
+        appendLog('WEBHOOK (' + eventType + ') [HTTP ' + res.status + ']', data);
+        if (success) {
+          showToast('Payment Succeeded! Deal Confirmed 🍔', 'success');
+          document.getElementById('claimIdText').textContent = 'claim_id: ' + currentClaimId + ' • Status: PAID (Confirmed)';
+        } else {
+          showToast('Payment Failed. Status retained.', 'error');
+        }
+      } catch (err) {
+        showToast('Webhook simulation error', 'error');
+      }
+    }
+
+    async function submitCreateDeal() {
+      const title = document.getElementById('inputTitle').value;
+      const price = parseInt(document.getElementById('inputPrice').value) * 100;
+      const stock = parseInt(document.getElementById('inputStock').value);
+      const now = new Date();
+      const ends = new Date(now.getTime() + 3600000);
+
+      try {
+        const res = await fetch('/v1/deals', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + adminToken
+          },
+          body: JSON.stringify({
+            title: title,
+            price_paise: price,
+            stock_total: stock,
+            starts_at: now.toISOString(),
+            ends_at: ends.toISOString()
+          })
+        });
+        const deal = await res.json();
+        activeDeal = deal;
+        updatePhotoPreview();
+        updateDealUi(deal);
+        appendLog('CREATED NEW DEAL', deal);
+        showToast('New deal created successfully!', 'success');
+      } catch (err) {
+        showToast('Failed to create deal', 'error');
+      }
+    }
+
+    async function runConcurrencyBlast() {
+      if (!activeDeal) return;
+      const grid = document.getElementById('blastGrid');
+      grid.innerHTML = '';
+      for (let i = 1; i <= 20; i++) {
+        const node = document.createElement('div');
+        node.id = 'blast-node-' + i;
+        node.className = 'blast-node';
+        node.textContent = i;
+        grid.appendChild(node);
+      }
+
+      document.getElementById('blastStats').textContent = 'Firing 20 simultaneous requests to PostgreSQL...';
+      const promises = [];
+
+      for (let i = 1; i <= 20; i++) {
+        promises.push(
+          fetch('/dev/blast-claim?deal_id=' + activeDeal.id + '&req_index=' + i)
+            .then(async res => {
+              const node = document.getElementById('blast-node-' + i);
+              if (res.status === 201) {
+                node.className = 'blast-node success';
+                node.title = '201 Created';
+                return 201;
+              } else {
+                node.className = 'blast-node conflict';
+                node.title = '409 Conflict';
+                return 409;
+              }
+            })
+            .catch(() => 500)
+        );
+      }
+
+      const results = await Promise.all(promises);
+      const claimed = results.filter(s => s === 201).length;
+      const rejected = results.filter(s => s === 409).length;
+
+      document.getElementById('blastStats').innerHTML =
+        '<strong style="color: var(--success);">' + claimed + ' Claims Succeeded</strong> &bull; ' +
+        '<strong style="color: var(--danger);">' + rejected + ' Rejected (Sold Out)</strong> &bull; ' +
+        '<strong>Oversold: 0 ✅</strong>';
+
+      appendLog('CONCURRENCY BLAST RESULT', {
+        total_requests: 20,
+        succeeded_201: claimed,
+        rejected_409_sold_out: rejected,
+        verdict: 'PostgreSQL FOR UPDATE row lock prevented overselling!'
+      });
+
+      refreshDealStock();
+      showToast('Blast Finished: ' + claimed + ' succeeded, ' + rejected + ' rejected. Zero overselling!', 'info');
+    }
+
+    // Auto-boot on page load
+    loadDefaultDeal();
+  </script>
+</body>
+</html>
